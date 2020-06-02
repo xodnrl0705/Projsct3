@@ -13,19 +13,13 @@ import javax.servlet.ServletContext;
 import jdk.management.resource.internal.TotalResourceContext;
 
 public class BbsDAO {
-	
-	//멤버변수 (클래스 전체 멤버메소드에서 접근가능)
+	//멤버변수 
 	Connection con;
 	PreparedStatement psmt;
 	ResultSet rs;
 	
-	//인자생성자1 : DB연결
-	/*
-	JSP파일에서 web.xml에 등록된 컨텍스트 초기화 파라미터를 가져와서
-	생성자 호출시 파라미터로 전달한다. 
-	*/
+	//인자생성자1 : 컨텍스트 초기화 파리미터를 인자로 DB연결
 	public BbsDAO(String driver, String url) {
-		
 		try {
 			Class.forName(driver);
 			String id = "suamil_user";
@@ -37,14 +31,7 @@ public class BbsDAO {
 			e.printStackTrace();
 		}
 	}
-	//인자생성자2
-	/*
-	JSP에서는 application내장객체를 파라미터로 전달하고 
-	생성자에서는 web.xml에 직접 접근한다. application내장객체는
-	javax.servlet.ServletContext타입으로 정의되었으므로
-	메소드에서 사용시에는 해당 타입으로 받아야한다.
-	※각 내작객체의 타입은 JSP교안 "04.내장객체"참조할것.
-	*/
+	//인자생성자2 application내장객체를 인자로 DB연결
 	public BbsDAO(ServletContext ctx) {
 		try {
 			Class.forName(ctx.getInitParameter("MariaJDBCDriver"));
@@ -56,6 +43,17 @@ public class BbsDAO {
 		catch (Exception e) {
 			System.out.println("DB연결실패ㅜㅜ;");
 			e.printStackTrace();
+		}
+	}
+	//DB자원해제
+	public void close() {
+		try {
+			if(rs!=null) rs.close();
+			if(psmt!=null) psmt.close();
+			if(con!=null) con.close();
+		}
+		catch (Exception e) {
+			System.out.println("자원반납시 예외발생");
 		}
 	}
 	//글쓰기 처리 메소드
@@ -90,54 +88,84 @@ public class BbsDAO {
 		return affected;
 	}
 	
-	//DB자원해제
-	public void close() {
-		try {
-			if(rs!=null) rs.close();
-			if(psmt!=null) psmt.close();
-			if(con!=null) con.close();
-		}
-		catch (Exception e) {
-			System.out.println("자원반납시 예외발생");
-		}
-	}
 	/*
 	게시판 리스트에서 게시물의 갯수를 count()함수를 통해 구해서 반환함.
-	가상번호, 페이지번호 처리를 위해 사용됨. 
+	페이지번호 처리를 위해 사용됨. 
 	*/
-//	public int getTotalRecordCount(Map<String, Object> map) {
-//		
-//		//게시물의 수는 0으로 초기화
-//		int totalCount = 0;
-//		
-//		//기본쿼리문(전체레코드를 대상으로 함)
-//		String query = "SELECT COUNT(*) FROM board"
-//				+	" WHERE bname = '" + map.get("bname") +"'";
-//		
-//		//JSP페이지에서 검색어를 입력한 경우 where절이 동적으로 추가됨.
-//		if(map.get("Word")!=null) {
-//			query += " AND "+map.get("Column") + " "
-//					+ " LIKE '%"+ map.get("Word") +"%'";
-//		}
-//		System.out.println("query="+query);
-//		
-//		try {
-//			psmt = con.prepareStatement(query);
-//			rs = psmt.executeQuery();
-//			rs.next();
-//			//반환한 결과값(레코드수)을 저장
-//			totalCount = rs.getInt(1);
-//		}
-//		catch (Exception e) {}
-//		
-//		return totalCount;
-//	}
-//	/*
-//	게시판 리스트에서 조건에 맞는 레코드를 select하여 ResultSet(결과셋)을
-//	List컬렉션에 저장후 반환하는 메소드 
-//	*/
-//
-//
+	public int getTotalRecordCount(Map<String, Object> map) {
+		
+		int totalCount = 0;//게시물의 수는 0으로 초기화
+		//기본쿼리문(전체레코드를 대상으로 함)
+		String query = "SELECT COUNT(*) FROM multi_board WHERE bname = '" + map.get("bname")+"'";
+		
+		//JSP페이지에서 검색어를 입력한 경우 where절이 동적으로 추가됨.
+		if(map.get("Word")!=null) {
+			query += " AND "+map.get("Column") + " "
+					+ " LIKE '%"+ map.get("Word") +"%'";
+		}
+		System.out.println("query="+query);
+		
+		try {
+			psmt = con.prepareStatement(query);
+			rs = psmt.executeQuery();
+			rs.next();
+			//반환한 결과값(레코드수)을 저장
+			totalCount = rs.getInt(1);
+		}
+		catch (Exception e) {}
+		
+		return totalCount;
+	}
+	//게시판 리스트 페이지 처리
+	public List<BbsDTO> selectListPage(Map<String, Object> map){
+		List<BbsDTO> bbs = new Vector<BbsDTO>();
+		
+		String query = "SELECT * FROM multi_board WHERE bname = '" + map.get("bname")+"'";
+		if(map.get("Word")!=null) {
+			query += " AND " + map.get("Column") +" "
+					+" LIKE '%" + map.get("Word") +"%' ";
+		}
+		query += "	ORDER BY num DESC LIMIT ?, ? ";
+		System.out.println("쿼리문:"+query);
+		try {
+			psmt = con.prepareStatement(query);
+			
+			//JSP에서 계산한 페이지 범위값을 이용해 인파라미터를 설정함.
+			/*
+				setString()으로 인파라미터를 설정하면 문자형이 되므로
+				여기서는 setInt()를 통해 정수 형태로 설정해야 한다.
+			 */
+			psmt.setInt(1, Integer.parseInt(map.get("start").toString()));
+			psmt.setInt(2, Integer.parseInt(map.get("end").toString()));
+			
+			rs = psmt.executeQuery();
+			//오라클이 반환해준 ResultSet의 갯수만큼 반복한다.
+			while(rs.next()) {
+				//하나의 레코드를 DTO객체에 저장하기 위해 새로운 객체생성
+				BbsDTO dto = new BbsDTO();
+				
+				dto.setNum(rs.getString("num"));
+				dto.setTitle(rs.getString("title"));
+				dto.setContent(rs.getString("content"));
+				dto.setPostdate(rs.getDate("postdate"));
+				dto.setId(rs.getString("id"));
+				dto.setVisitcount(rs.getString("visitcount"));
+				
+				bbs.add(dto);
+			}
+		}
+		catch(Exception e) {
+			System.out.println("Select시 예외발생");
+			e.printStackTrace();
+		}
+		return bbs;
+	}
+	
+	/*
+	게시판 리스트에서 조건에 맞는 레코드를 select하여 ResultSet(결과셋)을
+	List컬렉션에 저장후 반환하는 메소드 
+	*/
+
 //	public List<BbsDTO> selectList(Map<String, Object> map){
 //		
 //		List<BbsDTO> bbs = new Vector<BbsDTO>();
@@ -178,50 +206,6 @@ public class BbsDAO {
 //		return bbs;
 //	}
 //	
-//	//게시판 리스트 페이지 처리
-//	public List<BbsDTO> selectListPage(Map<String, Object> map){
-//		List<BbsDTO> bbs = new Vector<BbsDTO>();
-//
-//		String query = "SELECT * FROM board WHERE bname='" + map.get("bname")+"'";
-//		if(map.get("Word")!=null) {
-//			query += " AND " + map.get("Column") +" "
-//					+" LIKE '%" + map.get("Word") +"%' ";
-//		}
-//		query += "	ORDER BY num DESC LIMIT ?, ? ";
-//		System.out.println("쿼리문:"+query);
-//		try {
-//			psmt = con.prepareStatement(query);
-//			
-//			//JSP에서 계산한 페이지 범위값을 이용해 인파라미터를 설정함.
-//			/*
-//				setString()으로 인파라미터를 설정하면 문자형이 되므로
-//				여기서는 setInt()를 통해 정수 형태로 설정해야 한다.
-//			*/
-//			psmt.setInt(1, Integer.parseInt(map.get("start").toString()));
-//			psmt.setInt(2, Integer.parseInt(map.get("end").toString()));
-//			
-//			rs = psmt.executeQuery();
-//			//오라클이 반환해준 ResultSet의 갯수만큼 반복한다.
-//			while(rs.next()) {
-//				//하나의 레코드를 DTO객체에 저장하기 위해 새로운 객체생성
-//				BbsDTO dto = new BbsDTO();
-//
-//				dto.setNum(rs.getString("num"));
-//				dto.setTitle(rs.getString("title"));
-//				dto.setContent(rs.getString("content"));
-//				dto.setPostDate(rs.getDate("postdate"));
-//				dto.setId(rs.getString("id"));
-//				dto.setVisitcount(rs.getString("visitcount"));
-//
-//				bbs.add(dto);
-//			}
-//		}
-//		catch(Exception e) {
-//			System.out.println("Select시 예외발생");
-//			e.printStackTrace();
-//		}
-//		return bbs;
-//	}
 //	
 //	//일련번호 num에 해당하는 게시물의 조회수 증가
 //	public void updateVisitCount(String num) {

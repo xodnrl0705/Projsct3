@@ -1,24 +1,20 @@
 package model;
 
-import java.sql.Date;
-
 public class BbsDTO {
 	
 	//멤버변수
-	public int num;
-    public String title;
-    public String content;
-    public String id;
-    public int visitcount;
-    public String bname;
-    public java.sql.Date postdate;
+	String num; 
+    String title;
+    String content;
+    String id;
+    String visitcount;
+    String bname;
+    java.sql.Date postdate;
     
-    
-    //getter/setter
-	public int getNum() {
+	public String getNum() {
 		return num;
 	}
-	public void setNum(int num) {
+	public void setNum(String num) {
 		this.num = num;
 	}
 	public String getTitle() {
@@ -39,10 +35,10 @@ public class BbsDTO {
 	public void setId(String id) {
 		this.id = id;
 	}
-	public int getVisitcount() {
+	public String getVisitcount() {
 		return visitcount;
 	}
-	public void setVisitcount(int visitcount) {
+	public void setVisitcount(String visitcount) {
 		this.visitcount = visitcount;
 	}
 	public String getBname() {
@@ -57,9 +53,4 @@ public class BbsDTO {
 	public void setPostdate(java.sql.Date postdate) {
 		this.postdate = postdate;
 	}
-	
-	
-	
-	
-	
 }

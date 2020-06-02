@@ -190,12 +190,12 @@ public class MembershipDAO {
 	   //DTO객체를 반환한다.
 	   return dto; 
    }
-   //완료
+   //로그인 기능 완료(관리자는 등급이 10)
    public Map<String, String> getMemberMap(String id, String pwd){
 	   Map<String, String> maps = new HashMap<String, String>();
 	   
 
-	   String query = "SELECT id, pass, name FROM "
+	   String query = "SELECT id, pass, name, grade FROM "
 			   +" membership WHERE id=? AND pass=?";
 
 	   try {
@@ -209,6 +209,8 @@ public class MembershipDAO {
 			   maps.put("id",rs.getString("id"));
 			   maps.put("pass",rs.getString("pass"));
 			   maps.put("name",rs.getString("name"));
+			   maps.put("grade",rs.getString("grade"));
+			   System.out.println("찾음! 등급:"+ maps.get("grade"));
 		   }
 		   else {
 			   System.out.println("결과셋이 없습니다.");

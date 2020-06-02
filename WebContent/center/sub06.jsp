@@ -2,9 +2,8 @@
     pageEncoding="UTF-8"%>
 <%@ include file="../include/global_head.jsp" %>
 
-
  <body>
-	<center>
+	<!-- <center> -->
 	<div id="wrap">
 		<%@ include file="../include/top.jsp" %>
 
@@ -22,7 +21,30 @@
 				</div>
 				<div class="con_box">
 					<p class="con_tit"><img src="../images/center/sub07_tit01.gif" alt="오시는길" /></p>
-					<img src="../images/center/sub07_img01.gif" class="con_img"/>
+					<!-- <img src="../images/center/sub07_img01.gif" class="con_img"/> -->
+					<div id="map" style="width:500px; height:400px; margin-bottom: 20px"></div>
+						<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=55d6813ce52a365ed01b1beda10adeb3"></script>
+						<script>
+							var container = document.getElementById('map');
+							var options = {
+								center: new kakao.maps.LatLng(37.498532, 126.777092),
+								level: 3
+							};
+					
+							var map = new kakao.maps.Map(container, options);
+							// 마커가 표시될 위치입니다 
+							var markerPosition  = new kakao.maps.LatLng(37.498532, 126.777092); 
+					
+							// 마커를 생성합니다
+							var marker = new kakao.maps.Marker({
+							    position: markerPosition
+							});
+					
+							// 마커가 지도 위에 표시되도록 설정합니다
+							marker.setMap(map);
+							/* map.setZoomable(false);   */ 
+						</script>
+
 					<p class="con_tit"><img src="../images/center/sub07_tit02.gif" alt="자가용 오시는길" /></p>
 					<div class="in_box">
 						<p class="dot_tit">강북 방향</p>
@@ -47,6 +69,6 @@
 	
 
 	<%@ include file="../include/footer.jsp" %>
-	</center>
+	<!-- </center> -->
  </body>
 </html>

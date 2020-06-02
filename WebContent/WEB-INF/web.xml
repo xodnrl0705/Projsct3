@@ -13,6 +13,16 @@
   	<param-value>jdbc:mariadb://127.0.0.1:3306/suamil_db</param-value>
   </context-param>
   
+  <!-- 페이지사이즈정보 -->
+  <context-param>
+  	<param-name>PAGE_SIZE</param-name>
+  	<param-value>2</param-value>
+  </context-param>
+  <context-param>
+  	<param-name>BLOCK_PAGE</param-name>
+  	<param-value>2</param-value>
+  </context-param>
+  
   <!-- 세션유지시간설정 -->
   <session-config>
       <session-timeout>60</session-timeout>

@@ -7,8 +7,43 @@
 <body id="page-top">
 	<%@ include file="./common/indexTop.jsp" %>
 	<div id="wrapper">
-		<!-- 사이드바메뉴 -->
-		<%@ include file="./common/indexSidebar.jsp" %>
+		
+    <ul class="sidebar navbar-nav"><!-- 사이드바 -->
+      <li class="nav-item active">
+        <a class="nav-link" href="memberInfo.jsp">
+          <i class="fas fa-fw fa-tachometer-alt"></i>
+          <span>회원관리</span>
+        </a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fas fa-fw fa-folder"></i>
+          <span>게시판관리</span>
+        </a>
+        <div class="dropdown-menu" aria-labelledby="pagesDropdown">
+          <h6 class="dropdown-header">열린공간:</h6>
+          <a class="dropdown-item" href="boardList.jsp">공지사항</a>
+          <a class="dropdown-item" href="boardList.jsp">프로그램일정</a>
+          <a class="dropdown-item" href="boardList.jsp">자유게시판</a>
+          <a class="dropdown-item" href="boardList.jsp">사진게시판</a>
+          <a class="dropdown-item" href="boardList.jsp">정보자료실</a>
+          <div class="dropdown-divider"></div>
+          <h6 class="dropdown-header">커뮤니티:</h6>
+          <a class="dropdown-item" href="404.html">직원자료실</a>
+          <a class="dropdown-item" href="blank.html">보호자게시판</a>
+        </div>
+      </li>
+      <!-- <li class="nav-item">
+        <a class="nav-link" href="charts.html">
+          <i class="fas fa-fw fa-chart-area"></i>
+          <span>Charts</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="tables.html">
+          <i class="fas fa-fw fa-table"></i>
+          <span>Tables</span></a>
+      </li> -->
+    </ul><!--사이드바 끝  -->
 	<div id="content-wrapper">
 	<!-- /.content-wrapper -->
       <div class="container-fluid">
@@ -86,6 +121,7 @@
             </div>
           </div>
         </div>
+
         <!-- Area Chart Example-->
         <div class="card mb-3">
           <div class="card-header">
@@ -96,6 +132,7 @@
           </div>
           <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
         </div>
+
         <!-- DataTables Example -->
         <div class="card mb-3">
           <div class="card-header">

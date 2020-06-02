@@ -241,8 +241,6 @@ function execDaumPostcode() {
 						<th><img src="../images/join_tit04.gif" /></th>
 						<td><input type="password" name="pass2" id="pass2" value="" class="join_input" />&nbsp;&nbsp;<span id="msg"></span></td>
 					</tr>
-					
-
 					<tr>
 						<th><img src="../images/join_tit06.gif" /></th>
 						<td>
