@@ -1,8 +1,20 @@
+<%@page import="model.BbsDTO"%>
+<%@page import="model.BbsDAO"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ include file="../include/global_head.jsp"%>
 <%@ include file="./isLogin.jsp"%>
 <%@ include file="./isFlag.jsp"%>
+<%
+//폼값 받기 - 파라미터로 전달된 게시물의 일련번호
+String num = request.getParameter("num");
+BbsDAO dao = new BbsDAO(application);
+
+//게시물을 가져와서 DTO객체로 반환
+BbsDTO dto = dao.selectView(num); 
+
+dao.close();
+%>
 <body>
 	<script>
 	function checkValidate(f) {
@@ -36,7 +48,8 @@
 				</div>
 				<!-- 게시판내용  -->
 				<div>
-					<form name="writeFrm" method="post" action = "writeProc.jsp" onsubmit="return checkValidate(this);">
+					<form name="writeFrm" method="post" action = "editProc.jsp"  onsubmit="return checkValidate(this);">
+						<input type="hidden" name="num" value="<%=dto.getNum() %>" />
 						<input type="hidden" name="bname" value="<%=bname %>" />
 						<table class="table table-bordered">
 							<colgroup>
@@ -46,14 +59,14 @@
 							<tbody>
 								<tr>
 									<th class="text-center" style="vertical-align: middle;">제목</th>
-									<td><input type="text" name="title" id="title"
+									<td><input type="text" name="title" id="title" value="<%=dto.getTitle()%>"
 										class="form-control" />
 									</td>
 								</tr>
 								<tr>
 									<th class="text-center" style="vertical-align: middle;">내용</th>
-									<td><textarea name="content" id="content" rows="10"
-											class="form-control"></textarea>
+									<td><textarea name="content" id="content" rows="10" 
+											class="form-control"><%=dto.getContent()%></textarea>
 									</td>
 								</tr>
 							</tbody>
@@ -64,7 +77,7 @@
 								<button type="submit" class="btn btn-danger">전송하기</button>
 								<button type="reset" class="btn btn-dark">Reset</button>
 								<button type="button" class="btn btn-warning"
-									onclick="location.href='sub01_write.jsp?bname=<%=bname%>';">리스트보기</button>
+									onclick="location.href='sub01_list.jsp?bname=<%=bname%>';">리스트보기</button>
 							</div>
 						</div>
 					</form>

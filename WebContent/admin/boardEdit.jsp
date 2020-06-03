@@ -8,6 +8,17 @@
     pageEncoding="UTF-8"%>
 <%@ include file="./isLogin.jsp" %>
 <%@ include file="./isFlag.jsp" %>
+<%
+//폼값 받기 - 파라미터로 전달된 게시물의 일련번호
+String num = request.getParameter("num");
+BbsDAO dao = new BbsDAO(application);
+
+//게시물을 가져와서 DTO객체로 반환
+BbsDTO dto = dao.selectView(num); 
+
+dao.close();
+%>
+
 <!DOCTYPE html>
 <html>
 	<%@ include file="./common/indexHead.jsp" %>
@@ -25,8 +36,6 @@ function checkValidate(f) {
 		return false
 	}
 }
-
-
 </script>
 
 
@@ -38,9 +47,10 @@ function checkValidate(f) {
 	
       	<div class="container-fluid"><!-- 게시판내용 -->
         	<div class="pt-3 pl-3 pr-3">
-        	<h3>게시판 - <small>Write(작성)</small></h3>
+        	<h3>게시판 - <small>Edit(수정)</small></h3>
         	<div class="pt-3 pl-3 pr-3">
-				<form name="writeFrm" method="post" action="writeProc.jsp" onsubmit="return checkValidate(this);">
+				<form name="writeFrm" method="post" action="editProc.jsp" onsubmit="return checkValidate(this);">
+					<input type="hidden" name="num" value="<%=dto.getNum() %>"/>
 					<input type="hidden" name="bname" value="<%=bname %>"/> <!--검색시 필수파라미터인 bname이 전달되어야한다.  -->
 					<table class="table table-bordered table-striped">
 						<colgroup>
@@ -52,19 +62,19 @@ function checkValidate(f) {
 								<th class="text-center" 
 									style="vertical-align:middle;">제목</th>
 								<td>
-									<input type="text" class="form-control" name="title" id="title" />
+									<input type="text" class="form-control" name="title" id="title" value="<%=dto.getTitle()%>"/>
 								</td>
 							</tr>
 							<tr>
 								<th class="text-center" 
 									style="vertical-align:middle;">내용</th>
 								<td>
-									<textarea rows="10" name="content" id="content"
-										class="form-control" ></textarea>
+									<textarea rows="10" name="content" id="content" 
+										class="form-control" ><%=dto.getContent()%></textarea>
 								</td>
 							</tr>
 							<tr>
-								<th class="text-center" name="attachedfile" id="attachedfile"
+								<th class="text-center" name="attachedfile" id="attachedfile" value="<%=dto.getAttachedfile()%>"
 									style="vertical-align:middle;">첨부파일</th>
 								<td>
 									<input type="file" class="form-control" />

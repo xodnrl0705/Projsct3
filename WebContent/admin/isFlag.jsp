@@ -24,7 +24,7 @@ case "freeboard":
 case "photo":
 	boardTitle = "사진게시판";
 	break;
-case "info":
+case "dataroom":
 	boardTitle = "정보자료실";
 	break;
 }

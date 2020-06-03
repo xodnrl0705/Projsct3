@@ -6,7 +6,7 @@
 <%@page import="model.BbsDAO"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ include file="./islogin.jsp" %>
+<%@ include file="./isLogin.jsp" %>
 <%@ include file="./isFlag.jsp" %>
 <%
 //한글깨짐처리 - 검색폼에서 입력된 한글이 전송되기때문
@@ -81,9 +81,9 @@ dao.close();
 	<!-- /.content-wrapper -->
       	<div class="container-fluid"><!-- 게시판내용 -->
         	<div class="pt-3 pl-3 pr-3">
-			<h3><%=boardTitle %></h3>
-			<div class="row">
+			<h3>열린공간 / <small><%=boardTitle %></small></h3>
 			<!-- 검색부분 -->
+			<div class="row">
 			<form class="form-inline ml-auto" name="searchFrm" method="get">	
 				<input type="hidden" name="bname" value="<%=bname %>"/> <!--검색시 필수파라미터인 bname이 전달되어야한다.  -->
 				<div class="form-group">
@@ -103,6 +103,7 @@ dao.close();
 				</div>
 			</form>	
 			</div>
+			<!-- 검색부분 끝-->
 			<div class="row mt-3">
 				<!-- 게시판리스트부분 -->
 				<table class="table table-bordered table-hover table-striped">
@@ -112,7 +113,11 @@ dao.close();
 					<col width="120px"/>
 					<col width="120px"/>
 					<col width="80px"/>
+				<%if(bname.equals("dataroom")) {%>
 					<col width="60px"/>
+				<%} %>
+					<col width="80px"/>
+					<col width="80px"/>
 				</colgroup>				
 				<thead>
 				<tr style="background-color: rgb(133, 133, 133); " class="text-center text-white">
@@ -121,13 +126,18 @@ dao.close();
 					<th>작성자</th>
 					<th>작성일</th>
 					<th>조회수</th>
+				<%if(bname.equals("dataroom")) {%>
 					<th>첨부</th>
+				<%} %>
+					<th>수정</th>
+					<th>삭제</th>
 				</tr>
-				</thead>				
+				</thead>	
+							
 				<tbody>
 				<% if(bbs.isEmpty()){%> 
 					<tr>
-						<td colspan="6" align="center" height="100">
+						<td colspan="8" align="center" height="100">
 							등록된 게시물이 없습니다.
 						</td>
 					</tr>
@@ -142,11 +152,26 @@ dao.close();
 					<!-- 리스트반복 start -->
 					<tr>
 						<td class="text-center"><%=vNum %></td>
-						<td class="text-left"><a href="BoardView.jsp?num=<%=dto.getNum() %>&nowPage=<%=nowPage%>&<%=queryStr%>"><%=dto.getTitle() %></a></td>
+						<td class="text-left"><a href="boardView.jsp?num=<%=dto.getNum() %>&nowPage=<%=nowPage%>&<%=queryStr%>"><%=dto.getTitle() %></a></td>
 						<td class="text-center"><%=dto.getId() %></td>
 						<td class="text-center"><%=dto.getPostdate() %></td>
 						<td class="text-center"><%=dto.getVisitcount() %></td>
+					<%if(bname.equals("dataroom")) {%>
 						<td class="text-center"><i class="material-icons" style="font-size:20px">attach_file</i></td>
+					<%} %>	
+						<td class="text-center"><button type="button" class="btn btn-secondary btn-sm"
+							onclick="location.href='boardEdit.jsp?bname=<%=bname %>&num=<%=dto.getNum()%>';">수정</button></td>
+						<td class="text-center"><button type="button" class="btn btn-success btn-sm" id="deletebtn"
+							onclick="isDelete();">삭제</button></td>
+						<script>
+							function isDelete() {
+								var c = confirm("삭제할까요?");
+								if(c){
+									location.href = "deleteProc.jsp?bname=<%=bname %>&num=<%=dto.getNum()%>";
+								}
+								
+							}
+						</script>
 					</tr>
 					<!-- 리스트반복 end -->
 				<% 

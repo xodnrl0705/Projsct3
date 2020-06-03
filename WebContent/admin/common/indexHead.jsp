@@ -14,4 +14,5 @@
   <link href="css/sb-admin.css" rel="stylesheet">
 <meta charset="UTF-8">
 <title>suamil - 관리자계정</title>
+<script src="../common/jquery/jquery-3.5.1.js"></script>
 </head>

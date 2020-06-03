@@ -1,14 +1,14 @@
 #회원테이블
 CREATE TABLE membership(
-	name VARCHAR(30) NOT NULL,  -- 이름
-	id VARCHAR(30) NOT NULL,    -- 아이디
-	pass VARCHAR(30) NOT NULL,  -- 비밀번호
-	tel VARCHAR(20) NOT NULL,	 -- 전화번호
-	phone VARCHAR(20) NOT NULL, -- 핸드폰번호
-	email VARCHAR(30) NOT NULL, -- 이메일
-	addr VARCHAR(30) NOT NULL,	 -- 주소
-	regidate DATETIME DEFAULT CURRENT_TIMESTAMP(), -- 가입날짜
-	grade VARCHAR(5) DEFAULT 1   		 -- 권한등급
+	name VARCHAR(30) NOT NULL,  #이름
+	id VARCHAR(30) NOT NULL,    #아이디
+	pass VARCHAR(30) NOT NULL,  #비밀번호
+	tel VARCHAR(20) NOT NULL,	 #전화번호
+	phone VARCHAR(20) NOT NULL, #핸드폰번호
+	email VARCHAR(30) NOT NULL, #이메일
+	addr VARCHAR(30) NOT NULL,	 #주소
+	regidate DATETIME DEFAULT CURRENT_TIMESTAMP(), #가입날짜
+	grade VARCHAR(5) DEFAULT 1   		 #권한등급
 );
 ALTER TABLE membership ADD CONSTRAINT pk_member
 	PRIMARY KEY(id);
@@ -23,12 +23,11 @@ create table multi_board (
     visitcount MEDIUMINT NOT NULL DEFAULT 0,
     bname VARCHAR(10) NOT NULL DEFAULT 'freeboard',
     postdate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    attachedfile VARCHAR(100),
+    downcount MEDIUMINT NOT NULL default 0 ,
 	 PRIMARY KEY (num)
 );
 SELECT * from multi_board; 
-
-ALTER TABLE multi_board ADD CONSTRAINT fk_multi_board_member
-	FOREIGN KEY(id) REFERENCES membership(id);
 
 ALTER TABLE multi_board ADD CONSTRAINT fk_multi_board_member
 	FOREIGN KEY(id) REFERENCES membership(id);
@@ -54,3 +53,6 @@ INSERT INTO multi_board (title,content,id)
 	VALUES('테스트글쓰기입니다7','테스트글쓰기입니다7','kosmo');
 INSERT INTO multi_board (title,content,id,bname)
 	VALUES('공지사항테스트1 ','테스트글쓰기입니다1','kosmo','notice');
+	
+SELECT * FROM membership
+ORDER BY id DESC limit 0, 2;

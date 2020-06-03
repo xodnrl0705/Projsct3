@@ -67,7 +67,7 @@ public class BbsDAO {
 			 	자동증가 컬럼으로 지정한다. 자동증가컬럼은 임의의 값을
 			 	입력하는것보다 쿼리에서 제외시켜 주는것이 좋다.
 			*/
-			String query = "INSERT INTO board ( "
+			String query = "INSERT INTO multi_board ( "
 					+ " title,content,id,visitcount,bname) "
 					+ " VALUES ( "
 					+ " ?, ?, ?, 0, ?)";
@@ -160,6 +160,103 @@ public class BbsDAO {
 		}
 		return bbs;
 	}
+	//일련번호 num에 해당하는 게시물의 조회수 증가
+	public void updateVisitCount(String num) {
+		
+		String query = "UPDATE multi_board SET "
+				+ " visitcount= visitcount+1 "
+				+ " WHERE num=?";
+		System.out.println("조회수증가:" + query);
+		try {
+			psmt=con.prepareStatement(query);
+			psmt.setString(1, num);
+			psmt.executeQuery();
+		}
+		catch (Exception e) {
+			System.out.println("조회수 증가시 예외발생");
+			e.printStackTrace();
+		}
+	}
+	//일련번호에 해당하는 게시물을 가져와서 DTO객체에 저장후 반환
+	public BbsDTO selectView(String num) {
+		BbsDTO dto = new BbsDTO();
+		
+		//기존쿼리문 : member테이블과 join없을때...
+		//String query = "SELECT * FROM board WHERE num=?";
+		
+		//변경된쿼리문 : member테이블과 join하여 사용자이름 가져옴.
+		String query = "SELECT B.*, M.name " + 
+				" FROM membership M INNER JOIN multi_board B " + 
+				"    ON M.id = B.id " + 
+				" WHERE num = ?";
+		try {
+			psmt = con.prepareStatement(query);
+			psmt.setString(1, num);
+			rs = psmt.executeQuery();
+			if(rs.next()) {
+				dto.setNum(rs.getString("num"));
+				dto.setTitle(rs.getString("title"));
+				dto.setContent(rs.getString("content"));
+				dto.setId(rs.getString("id"));
+				dto.setVisitcount(rs.getString("visitcount"));
+				dto.setPostdate(rs.getDate("postdate"));
+				//테이블join으로 컬럼추가
+				dto.setName(rs.getString("attachedfile"));
+				dto.setName(rs.getString("downcount"));
+				dto.setName(rs.getString("name"));
+				System.out.println("상세보기 성공");
+			}
+		}
+		catch (Exception e) {
+			System.out.println("상세보기시 예외발생");
+			e.printStackTrace();
+		}
+		return dto;
+	}
+	
+	public int updateEdit(BbsDTO dto) {
+		int affected = 0;
+		try {
+			String query = "UPDATE multi_board SET "
+					+ " title=?, content=?, attachedfile=? "
+					+ " WHERE num=?";
+			
+			psmt = con.prepareStatement(query);
+			psmt.setString(1, dto.getTitle());
+			psmt.setString(2, dto.getContent());
+			psmt.setString(3, dto.getAttachedfile());
+			psmt.setString(4, dto.getNum());
+			
+			affected = psmt.executeUpdate();
+			System.out.println("수정완료");
+		}
+		catch (Exception e) {
+			System.out.println("update중 예외발생");
+			e.printStackTrace();
+		}
+		
+		return affected;
+	}
+	//게시물 삭제 처리
+	public int delete(BbsDTO dto) {
+		int affected = 0;
+		try {
+			String query = "DELETE FROM multi_board WHERE num=?";
+			
+			psmt = con.prepareStatement(query);
+			psmt.setString(1,dto.getNum());
+			
+			affected = psmt.executeUpdate();
+			
+		}
+		catch (Exception e) {
+			System.out.println("delete중 예외발생");
+			e.printStackTrace();
+		}
+		return affected;
+	}
+	
+	
 	
 	/*
 	게시판 리스트에서 조건에 맞는 레코드를 select하여 ResultSet(결과셋)을
@@ -207,94 +304,9 @@ public class BbsDAO {
 //	}
 //	
 //	
-//	//일련번호 num에 해당하는 게시물의 조회수 증가
-//	public void updateVisitCount(String num) {
-//		
-//		String query = "UPDATE board SET "
-//				+ " visitcount= visitcount+1 "
-//				+ " WHERE num=?";
-//		System.out.println("조회수증가:" + query);
-//		try {
-//			psmt=con.prepareStatement(query);
-//			psmt.setString(1, num);
-//			psmt.executeQuery();
-//		}
-//		catch (Exception e) {
-//			System.out.println("조회수 증가시 예외발생");
-//			e.printStackTrace();
-//		}
-//	}
-//	//일련번호에 해당하는 게시물을 가져와서 DTO객체에 저장후 반환
-//	public BbsDTO selectView(String num) {
-//		BbsDTO dto = new BbsDTO();
-//		
-//		//기존쿼리문 : member테이블과 join없을때...
-//		//String query = "SELECT * FROM board WHERE num=?";
-//		
-//		//변경된쿼리문 : member테이블과 join하여 사용자이름 가져옴.
-//		String query = "SELECT B.*, M.name " + 
-//				" FROM member M INNER JOIN board B " + 
-//				"    ON M.id = B.id " + 
-//				" WHERE num = ?";
-//		try {
-//			psmt = con.prepareStatement(query);
-//			psmt.setString(1, num);
-//			rs = psmt.executeQuery();
-//			if(rs.next()) {
-//				dto.setNum(rs.getString(1));
-//				dto.setTitle(rs.getString(2));
-//				dto.setContent(rs.getString("content"));
-//				dto.setId(rs.getString("id"));
-//				dto.setPostDate(rs.getDate("postdate"));
-//				dto.setVisitcount(rs.getString(6));
-//				//테이블join으로 컬럼추가
-//				dto.setName(rs.getString("name"));
-//			}
-//		}
-//		catch (Exception e) {
-//			System.out.println("상세보기시 예외발생");
-//			e.printStackTrace();
-//		}
-//		return dto;
-//	}
+	
+
 //	
-//	public int updateEdit(BbsDTO dto) {
-//		int affected = 0;
-//		try {
-//			String query = "UPDATE board SET "
-//					+ " title=?, content=? "
-//					+ " WHERE num=?";
-//			
-//			psmt = con.prepareStatement(query);
-//			psmt.setString(1, dto.getTitle());
-//			psmt.setString(2, dto.getContent());
-//			psmt.setString(3, dto.getNum());
-//			
-//			affected = psmt.executeUpdate();
-//		}
-//		catch (Exception e) {
-//			System.out.println("update중 예외발생");
-//			e.printStackTrace();
-//		}
-//		
-//		return affected;
-//	}
-//	//게시물 삭제 처리
-//	public int delete(BbsDTO dto) {
-//		int affected = 0;
-//		try {
-//			String query = "DELETE FROM board WHERE num=?";
-//			
-//			psmt = con.prepareStatement(query);
-//			psmt.setString(1,dto.getNum());
-//			
-//			affected = psmt.executeUpdate();
-//			
-//		}
-//		catch (Exception e) {
-//			System.out.println("delete중 예외발생");
-//			e.printStackTrace();
-//		}
-//		return affected;
-//	}
+
+
 }

@@ -11,4 +11,31 @@ if(bname == null || bname.equals("")){
 	JavascriptUtil.jsAlertLocation("필수파라미터 누락됨(게시판종류) 홈화면으로 이동합니다.", "../main/main.jsp", out);//자바스크립트를 띄어주는 코드 alert
 	return;
 }
+
+String boardTitle = "";
+String img = "";
+switch(bname){
+case "notice":
+	boardTitle = "공지사항";
+	img = "../images/space/sub01_title.gif";
+	break;
+case "schedule":
+	boardTitle = "프로그램일정";
+	img = "../images/space/sub02_title.gif";
+	break;
+case "freeboard":
+	boardTitle = "자유게시판";
+	img = "../images/space/sub03_title.gif";
+	break;
+case "photo":
+	boardTitle = "사진게시판";
+	img = "../images/space/sub04_title.gif";
+	break;
+case "dataroom":
+	boardTitle = "정보자료실";
+	img = "../images/space/sub05_title.gif";
+	break;
+	
+}
+
 %>

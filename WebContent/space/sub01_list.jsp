@@ -1,117 +1,197 @@
+<%@page import="util.PagingUtil"%>
+<%@page import="model.BbsDTO"%>
+<%@page import="java.util.List"%>
+<%@page import="java.util.Map"%>
+<%@page import="java.util.HashMap"%>
+<%@page import="model.BbsDAO"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-<%@ include file="../include/global_head.jsp" %>
+	pageEncoding="UTF-8"%>
+<%@ include file="../include/global_head.jsp"%>
+<%@ include file="isFlag.jsp"%>
+<%
+	//한글깨짐처리 - 검색폼에서 입력된 한글이 전송되기때문
+	request.setCharacterEncoding("UTF-8");
 
+	/* DB연결하기 */
+	//1.web.xml에 저장된 컨텍스트 초기화 파라미터를 application객체를 통해 가져옴
+	String drv = application.getInitParameter("MariaJDBCDriver");
+	String url = application.getInitParameter("MariaConnectURL");
+	//2.DAO객체 생성 및 DB커넥션
+	BbsDAO dao = new BbsDAO(drv, url);//DB연결 끝
 
- <body>
-	<center>
+	Map<String, Object> param = new HashMap<String, Object>();//폼값을 받아서 파라미터를 저장할변수 생성
+	param.put("bname", bname);
+
+	String queryStr = "";//검색시 페이지번호로 쿼리스트링을 넘겨주기 위한 용도(url부분에 뜬다.)
+	queryStr = "bname=" + bname + "&"; //필수파라미터에 대한 쿼리스트링 처리
+
+	//검색어 입력시 전송된 폼값을 받아 Map에 저장
+	String searchColumn = request.getParameter("searchColumn");
+	String searchWord = request.getParameter("searchWord");
+	if (searchWord != null) {
+		//검색어를 입력한 경우 Map에 값을 입력함.
+		param.put("Column", searchColumn);
+		param.put("Word", searchWord);
+		//검색어가 있을때 쿼리스트링을 만들어준다.
+		queryStr += "searchColumn=" + searchColumn + "&searchWord=" + searchWord + "&";
+	}
+	//board테이블에 입력된 전체 레코드 갯수를 카운트하여 반환받음
+	int totalRecordCount = dao.getTotalRecordCount(param);
+
+	/*****페이지처리 start******/
+	//web.xml의 초기화 파라미터 가져와서 정수로 변경후 저장
+	int pageSize = Integer.parseInt(application.getInitParameter("PAGE_SIZE"));
+	int blockPage = Integer.parseInt(application.getInitParameter("BLOCK_PAGE"));
+
+	//전체페이지수 계산
+	int totalPage = (int) Math.ceil((double) totalRecordCount / pageSize);
+
+	/*
+	현제페이지번호 : 파라미터가 없을때는 무조건 1페이지로 지정하고, 있을때는 해당 값을
+		얻어와서 지정한다. 즉 리스트에 처음 진입했을때는 1페이지가 된다.
+	*/
+	int nowPage = (request.getParameter("nowPage") == null || request.getParameter("nowPage").equals("")) ? 1
+			: Integer.parseInt(request.getParameter("nowPage"));
+
+	//한페이지에 출력할 게시물의 범위를 결정한다. 
+	int start = (nowPage - 1) * pageSize;
+	int end = pageSize;
+
+	//게시물의 범위를 Map컬렉션에 저장하고 DAO로 전달한다.
+	param.put("start", start);
+	param.put("end", end);
+	//조건에 맞는 레코드를 select하여 결과셋을 List컬렉션으로 반환받음
+	List<BbsDTO> bbs = dao.selectListPage(param);
+	dao.close();
+%>
+
+<body>
+	<!-- <center> -->
 	<div id="wrap">
-		<%@ include file="../include/top.jsp" %>
-
+		<%@ include file="../include/top.jsp"%>
 		<img src="../images/space/sub_image.jpg" id="main_visual" />
-
 		<div class="contents_box">
 			<div class="left_contents">
-				<%@ include file = "../include/space_leftmenu.jsp" %>
+				<%@ include file="../include/space_leftmenu.jsp"%>
 			</div>
 			<div class="right_contents">
 				<div class="top_title">
-					<img src="../images/space/sub01_title.gif" alt="공지사항" class="con_title" />
-					<p class="location"><img src="../images/center/house.gif" />&nbsp;&nbsp;열린공간&nbsp;>&nbsp;공지사항<p>
+					<img src="<%=img%>" alt="공지사항" class="con_title" />
+					<p class="location">
+						<img src="../images/center/house.gif" />&nbsp;&nbsp;열린공간&nbsp;>&nbsp;<%=bname%>
+					<p>
 				</div>
 				<div>
+					<!-- 검색부분 -->
+					<div class="row text-right" style="margin-bottom: 20px;">
+						<form class="form-inline ml-auto" name="searchFrm">
+							<input type="hidden" name="bname" value="<%=bname%>" />
+							<div class="form-group">
+								<select name="searchColumn" class="form-control">
+									<option value="title">제목</option>
+									<option value="id">작성자</option>
+									<option value="content">내용</option>
+								</select>
+							</div>
+							<div class="input-group">
+								<input type="text" name="searchWord" class="form-control" />
+								<div class="input-group-btn">
+									<button type="submit" class="btn btn-warning">
+										<i class='fa fa-search' style='font-size: 25px'></i>
+									</button>
+								</div>
+							</div>
+						</form>
+					</div>
+					<!-- 검색부분 끝 -->
+					<!-- 게시판리스트부분 -->
+					<div class="row">
+						<table class="table table-bordered table-hover ">
+							<colgroup>
+								<col width="80px" />
+								<col width="*" />
+								<col width="120px" />
+								<col width="120px" />
+								<col width="80px" />
+								<% if (bname.equals("dataroom")) { %>
+								<col width="50px" />
+								<% } %>
+							</colgroup>
 
-<div class="row text-right" style="margin-bottom:20px;
-		padding-right:50px;">
-<!-- 검색부분 -->
-<form class="form-inline">	
-	<div class="form-group">
-		<select name="keyField" class="form-control">
-			<option value="">제목</option>
-			<option value="">작성자</option>
-			<option value="">내용</option>
-		</select>
-	</div>
-	<div class="input-group">
-		<input type="text" name="keyString"  class="form-control"/>
-		<div class="input-group-btn">
-			<button type="submit" class="btn btn-default">
-				<i class="glyphicon glyphicon-search"></i>
-			</button>
-		</div>
-	</div>
-</form>	
-</div>
-<div class="row">
-	<!-- 게시판리스트부분 -->
-	<table class="table table-bordered table-hover">
-	<colgroup>
-		<col width="80px"/>
-		<col width="*"/>
-		<col width="120px"/>
-		<col width="120px"/>
-		<col width="80px"/>
-		<col width="50px"/>
-	</colgroup>
-	
-	<thead>
-	<tr class="success">
-		<th class="text-center">번호</th>
-		<th class="text-left">제목</th>
-		<th class="text-center">작성자</th>
-		<th class="text-center">작성일</th>
-		<th class="text-center">조회수</th>
-		<th class="text-center">첨부</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	<!-- 리스트반복 -->
-	<tr>
-		<td class="text-center">번호</td>
-		<td class="text-left"><a href="sub01_view.jsp">제목</a></td>
-		<td class="text-center">작성자</td>
-		<td class="text-center">작성일</td>
-		<td class="text-center">조회수</td>
-		<td class="text-center">첨부</td>
-	</tr>
-	</tbody>
-	</table>
-</div>
-<div class="row text-right" style="padding-right:50px;">
-	<!-- 각종 버튼 부분 -->
-	<!-- <button type="reset" class="btn">Reset</button> -->
-		
-	<button type="button" class="btn btn-default" 
-		onclick="location.href='sub01_write.jsp';">글쓰기</button>
-				
-	<!-- <button type="button" class="btn btn-primary">수정하기</button>
-	<button type="button" class="btn btn-success">삭제하기</button>
-	<button type="button" class="btn btn-info">답글쓰기</button>
-	<button type="button" class="btn btn-warning">리스트보기</button>
-	<button type="submit" class="btn btn-danger">전송하기</button> -->
-</div>
-<div class="row text-center">
-	<!-- 페이지번호 부분 -->
-	<ul class="pagination">
-		<li><span class="glyphicon glyphicon-fast-backward"></span></li>
-		<li><a href="#">1</a></li>		
-		<li class="active"><a href="#">2</a></li>
-		<li><a href="#">3</a></li>
-		<li><a href="#">4</a></li>		
-		<li><a href="#">5</a></li>
-		<li><span class="glyphicon glyphicon-fast-forward"></span></li>
-	</ul>	
-</div>
+							<thead class="thead-light">
+								<tr class="success">
+									<th class="text-center">번호</th>
+									<th class="text-center">제목</th>
+									<th class="text-center">작성자</th>
+									<th class="text-center">작성일</th>
+									<th class="text-center">조회수</th>
+									<%if (bname.equals("dataroom")) { %>
+									<th class="text-center">첨부</th>
+									<% } %>
+								</tr>
+							</thead>
+
+							<tbody>
+								<%if (bbs.isEmpty()) {%>
+								<tr>
+									<td colspan="8" align="center" height="100">등록된 게시물이 없습니다.
+									</td>
+								</tr>
+								<%
+									} else {
+										int vNum = 0;
+										int countNum = 0;
+
+										for (BbsDTO dto : bbs) {
+											vNum = totalRecordCount - (((nowPage - 1) * pageSize) + countNum++);
+								%>
+								<!-- 리스트반복 -->
+								<tr>
+									<td class="text-center"><%=vNum%></td>
+									<td class="text-left"><a
+										href="sub01_view.jsp?num=<%=dto.getNum()%>&nowPage=<%=nowPage%>&<%=queryStr%>"><%=dto.getTitle()%></a></td>
+									<td class="text-center"><%=dto.getId()%></td>
+									<td class="text-center"><%=dto.getPostdate()%></td>
+									<td class="text-center"><%=dto.getVisitcount()%></td>
+								<%if (bname.equals("dataroom")) {%>
+									<td class="text-center">첨부</td>
+								<% } %>
+								</tr>
+								<!-- 리스트반복 끝 -->
+								<%
+										}
+									}
+								%>
+							</tbody>
+						</table>
+					</div>
+					<!-- 게시판리스트부분 끝 -->
+					<!-- 게시판버튼부분  (자유게시판에서만 글쓰기가능)-->
+					<%if(bname.equals("freeboard")){ %>
+					<div class="row">
+						<div class="col text-right">
+							<button type="button" class="btn btn-primary"
+								onclick="location.href='sub01_write.jsp?bname=<%=bname%>';">글쓰기</button>
+						</div>
+					</div>
+					<%} %>
+					<!-- 게시판버튼부분 끝  -->
+					<!-- 페이지번호 부분  -->
+					<div class="row mt-3">
+						<div class="col">
+							<ul class="pagination justify-content-center">
+								<%=PagingUtil.pagingBS4(totalRecordCount, pageSize, blockPage, nowPage, "sub01_list.jsp?"+queryStr) %>
+							</ul>
+						</div>
+					</div>
+					<!-- 페이지번호 부분  끝-->
 
 				</div>
 			</div>
 		</div>
-		<%@ include file="../include/quick.jsp" %>
+		<%@ include file="../include/quick.jsp"%>
 	</div>
-
-
-	<%@ include file="../include/footer.jsp" %>
-	</center>
- </body>
+	<%@ include file="../include/footer.jsp"%>
+	<!-- </center> -->
+</body>
 </html>

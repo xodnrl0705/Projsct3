@@ -9,9 +9,7 @@ request.setCharacterEncoding("UTF-8");
 <script>
 function isValidate(f){
 	var reg1 = /^[a-z0-9]{4,12}$/;    // a-z 0-9 중에 7자리 부터 14자리만 허용 한다는 뜻이구요
-	var reg2 = /[a-z]/g;    
-	var reg3 = /[0-9]/g;
-	
+
 	if(f.name.value==''){
 		alert('이름을 입력하세요');
 		f.name.focus();
@@ -22,7 +20,7 @@ function isValidate(f){
 		f.id.focus();
 		return false;
 	}
-	var idCheck = reg1.test(f.id.value) && reg2.test(f.id.value) && reg3.test(f.id.value);
+	var idCheck = reg1.test(f.id.value);
 	console.log("아이디검사:" + idCheck);
 	if(idCheck == false){ 
         alert('아이디는 숫자와 영문자 조합으로 4~12자리를 사용해야 합니다.'); 
@@ -36,7 +34,7 @@ function isValidate(f){
 		return false;
 	}
 	
-	var passCheck = reg1.test(f.pass.value) && reg2.test(f.pass.value) && reg3.test(f.pass.value);
+	var passCheck = reg1.test(f.pass.value);
 	console.log("비밀번호검사:" + passCheck);
 	if(passCheck == false){
         alert('비밀번호는 숫자와 영문자 조합으로 4~12자리를 사용해야 합니다.'); 

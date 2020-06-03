@@ -10,6 +10,9 @@ public class BbsDTO {
     String visitcount;
     String bname;
     java.sql.Date postdate;
+    String attachedfile;
+    String downcount;
+    String name;//view에서 membership테이블과 join해서 작성자 이름을 보기위한변수 
     
 	public String getNum() {
 		return num;
@@ -53,4 +56,23 @@ public class BbsDTO {
 	public void setPostdate(java.sql.Date postdate) {
 		this.postdate = postdate;
 	}
+	public String getAttachedfile() {
+		return attachedfile;
+	}
+	public void setAttachedfile(String attachedfile) {
+		this.attachedfile = attachedfile;
+	}
+	public String getDowncount() {
+		return downcount;
+	}
+	public void setDowncount(String downcount) {
+		this.downcount = downcount;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 }
