@@ -23,14 +23,16 @@ create table multi_board (
     visitcount MEDIUMINT NOT NULL DEFAULT 0,
     bname VARCHAR(10) NOT NULL DEFAULT 'freeboard',
     postdate DATETIME DEFAULT CURRENT_TIMESTAMP,
-    attachedfile VARCHAR(100),
+    attachedmulti_boardfile VARCHAR(100),
     downcount MEDIUMINT NOT NULL default 0 ,
 	 PRIMARY KEY (num)
 );
 SELECT * from multi_board; 
 
 ALTER TABLE multi_board ADD CONSTRAINT fk_multi_board_member
-	FOREIGN KEY(id) REFERENCES membership(id);
+	FOREIGN KEY(id) REFERENCES membership(id) ON DELETE CASCADE;
+	
+ALTER TABLE multi_board DROP CONSTRAINT fk_multi_board_member;
 # 더미데이터
 INSERT INTO membership (name,id,pass,tel,phone,email,addr,grade)
 	VALUES('김태욱','kosmo','1234','111111','222222','asdf','1234asdf',10);
@@ -56,3 +58,9 @@ INSERT INTO multi_board (title,content,id,bname)
 	
 SELECT * FROM membership
 ORDER BY id DESC limit 0, 2;
+
+select * FROM membership WHERE id = 'test1';
+
+
+SELECT * FROM multi_board WHERE bname = 'photo' ORDER BY num DESC LIMIT 0, 6 ;
+

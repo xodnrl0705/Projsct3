@@ -66,20 +66,20 @@ if(cookies!=null){
 						<tr>
 							<th><img src="../images/login_tit01.gif" alt="아이디" /></th>
 							<!-- 변수 user에 저장된 값이 있다면 value속성에 삽입 -->
-							<td><input type="text" name="user_id" value="<%= user == null ? "" : user %>" class="login_input" /></td>
-							<td rowspan="2"><input type="image" src="../images/login_btn01.gif" alt="로그인" /></td>
+							<td><input type="text" name="user_id" value="<%= user == null ? "" : user %>" class="login_input" tabindex="1"/></td>
+							<td rowspan="2"><input type="image" src="../images/login_btn01.gif" alt="로그인" tabindex="3"/></td>
 						</tr>
 						<tr>
 							<th><img src="../images/login_tit02.gif" alt="패스워드" /></th>
-							<td><input type="password" name="user_pass" value="" class="login_input" /></td>
+							<td><input type="password" name="user_pass" value="" class="login_input" tabindex="2"/></td>
 						</tr>
 					</table>
 					<p>
 						<!-- 변수 user에 저장된 값이 있을때 checkbox의 checked속성을 활성화 한다. -->
-						<input type="checkbox" name="id_save" value="" <% if(user.length()!=0){ %> checked="checked" <% } %>/>
+						<input type="checkbox" name="id_save" value="" <% if(user.length()!=0){ %> checked="checked" <% } %> tabindex="4"/>
 							<img src="../images/login_tit03.gif" alt="저장" />
-						<a href="../member/id_pw.jsp"><img src="../images/login_btn02.gif" alt="아이디/패스워드찾기" /></a>
-						<a href="../member/join01.jsp"><img src="../images/login_btn03.gif" alt="회원가입" /></a>
+						<a href="../member/id_pw.jsp"><img src="../images/login_btn02.gif" alt="아이디/패스워드찾기" tabindex="5"/></a>
+						<a href="../member/join01.jsp"><img src="../images/login_btn03.gif" alt="회원가입" tabindex="6"/></a>
 					</p>
 				</div>
 				</form>

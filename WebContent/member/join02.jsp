@@ -1,48 +1,73 @@
+<%@page import="util.JavascriptUtil"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ include file="../include/global_head.jsp" %>
 <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <%
 request.setCharacterEncoding("UTF-8");
+
+String check = request.getParameter("agreement1"); 
+System.out.println(check);
+System.out.println(request.getParameter("agreement1"));
+if(check == null){
+	//만약 bname의 값이 없다면 로그인 화면으로 강제이동시킨다.
+	JavascriptUtil.jsAlertLocation("필수파라미터 누락됨(체크박스 체크) 홈화면으로 이동합니다.", "../member/join01.jsp", out);//자바스크립트를 띄어주는 코드 alert
+	return;
+}
 %>
 
 <script>
 function isValidate(f){
-	var reg1 = /^[a-z0-9]{4,12}$/;    // a-z 0-9 중에 7자리 부터 14자리만 허용 한다는 뜻이구요
-
 	if(f.name.value==''){
 		alert('이름을 입력하세요');
 		f.name.focus();
 		return false;
 	}
-	if(f.id.value==''){
-		alert('아이디를 입력하세요');
+	var id = f.id.value;
+	var num = id.search(/[0-9]/g);
+	var eng = id.search(/[a-z]/ig);
+
+ 	if(id.length < 4 || id.length > 12){
+		alert("아이디는 4자리 ~ 12자리 이내로 입력해주세요.");
 		f.id.focus();
 		return false;
-	}
-	var idCheck = reg1.test(f.id.value);
-	console.log("아이디검사:" + idCheck);
-	if(idCheck == false){ 
-        alert('아이디는 숫자와 영문자 조합으로 4~12자리를 사용해야 합니다.'); 
-        f.id.focus();
-        return false;
-	}
+ 	}else if(id.search(/\s/) != -1){
+  		alert("아이디는 공백 없이 입력해주세요.");
+  		f.id.focus();
+  		return false;
+ 	}else if(num < 0 || eng < 0 ){
+  		alert("아이디는 영문,숫자를 혼합하여 입력해주세요.");
+  		f.id.focus();
+  		return false;
+ 	}
 	
-	if(f.pass.value==''){
-		alert('비밀번호를 입력하세요');
-		f.pass.focus();
-		return false;
-	}
 	
-	var passCheck = reg1.test(f.pass.value);
-	console.log("비밀번호검사:" + passCheck);
-	if(passCheck == false){
-        alert('비밀번호는 숫자와 영문자 조합으로 4~12자리를 사용해야 합니다.'); 
+	var pw = f.pass.value;
+	var num = pw.search(/[0-9]/g);
+	var eng = pw.search(/[a-z]/ig);
+
+ 	if(pw.length < 4 || pw.length > 12){
+		alert("비밀번호는 4자리 ~ 12자리 이내로 입력해주세요.");
 		f.pass.focus();
-        return false;
-	}
+  		return false;
+ 	}else if(pw.search(/\s/) != -1){
+  		alert("비밀번호는 공백 없이 입력해주세요.");
+  		f.pass.focus();
+  		return false;
+ 	}else if(num < 0 || eng < 0 ){
+  		alert("비밀번호는 영문,숫자를 혼합하여 입력해주세요.");
+  		f.pass.focus();
+  		return false;
+ 	}
+	
 	if(f.pass2.value==''){
 		alert('비밀번호를 확인해주세요');
+		f.pass2.focus();
+		return false;
+	}
+	if(f.pass.value != f.pass2.value){
+		alert('비밀번호가 일치하지 않습니다.');
+		f.pass2.value='';
 		f.pass2.focus();
 		return false;
 	}
@@ -79,17 +104,8 @@ function isValidate(f){
         /* f.zip1.focus(); */
         return false;
     }
-	if(f.pass.value != f.pass2.value){
-		alert('비밀번호가 일치하지 않습니다.');
-		f.pass2.value='';
-		f.pass2.focus();
-		return false;
-	}
-	if(f.idcheck.value !=f.id.value){
-		alert('중복확인을 확인해주세요');
-		return false;
-	}
-}
+	
+} 
 
 $(function() {//이메일 select에서 선택할시 발생되는 change
 	$('#last_email_check2').change(function() {
@@ -132,20 +148,67 @@ $(function() {//이메일 select에서 선택할시 발생되는 change
 			$('#msg').html('<b>*암호가일치하지않습니다.*</b>').css('color','red');
 		}
 	});
-});
+	
+	$('#id').blur(function(){
+		
+		var id = $('#id').val();
+		var num = id.search(/[0-9]/g);
+		var eng = id.search(/[a-z]/ig);
+		
+		if(id.length < 4 || id.length > 12){
+			$('#id').val('');
+			$('#id_check').html('<b>아이디는 4자리 ~ 12자리 이내로 입력해주세요.</b>').css('color','red');
+			document.getElementById('id').focus();
+			return false;
+	 	}else if(id.search(/\s/) != -1){
+	 		$('#id').val('');
+			$('#id_check').html('<b>아이디는 공백 없이 입력해주세요.</b>').css('color','red');
+	  		document.getElementById('id').focus();
+	  		return false;
+	 	}else if(num < 0 || eng < 0 ){
+	 		$('#id').val('');
+			$('#id_check').html('<b>아이디는 영문,숫자를 혼합하여 입력해주세요.</b>').css('color','red');
+	  		document.getElementById('id').focus();
+	  		return false;
+	 	}
+		$.ajax({
+			url : './overappingProc.jsp',
+			type : 'get',
+			data : {
+				id : id,
 
-function idCheck(){
-	var f = document.loginfrm.id;
-    if(f.value==""||f.value==null){//중복체크시 입력된 아이디가 없다면...
-        alert("아이디를 입력후 중복확인을 눌러주세요");
-        f.focus();
-    }
-    else{
-        //f.readOnly = true;//아이디를 입력한 경우라면 입력필드를 readonly로 변경하고 팝업창을 띄운다.
-    	//중복확인창을 띄울때 입력한 아이디를 파라미터로 전달한다.
-        window.open("./overappingProc.jsp?id="+f.value,
-                "idover","width=300,height=200");
-    }
+			},	
+			//요청성공시의 콜백메소드
+			success : function(resData){
+				var d = JSON.parse(resData);
+				if(d.result ==1){
+					$('#id_check').html(d.message).css('color','blue');
+				}else{
+					$('#id_check').html(d.message).css('color','red');
+					$('#id').val('');
+					var c = $('#id').val();
+					document.getElementById('id').focus();
+					$('#idcheck').val(c);
+				}
+				
+			},
+			//요청실패시 콜백메소드는 외부 JS함수로 정의됨.
+			error : errFunc
+		});
+		
+		
+		
+		
+	});
+	
+	
+	
+	
+});
+function errFunc() {
+	alert("에러발생. 디버깅하세욤.");
+	return false;
+	
 }
 
 //우편번호검색 API
@@ -228,8 +291,7 @@ function execDaumPostcode() {
 					</tr>
 					<tr>
 						<th><img src="../images/join_tit002.gif" /></th>
-						<td><input type="text" name="id" id="id" value="" class="join_input" />&nbsp;<a href = "#" onclick = "idCheck(); return false;" style="cursor:hand;"><img src="../images/btn_idcheck.gif" alt="중복확인"/></a>&nbsp;&nbsp;<span id = "id_check">* 4자 이상 12자 이내의 영문/숫자 조합하여 공백 없이 기입</span></td>
-						<input type ="hidden" name = "idcheck" id = "idcheck" value = "f">
+						<td><input type="text" name="id" id="id" value="" class="join_input" />&nbsp;&nbsp;<span id = "id_check">* 4자 이상 12자 이내의 영문/숫자 조합하여 공백 없이 기입</span></td>
 					</tr>
 					<tr>
 						<th><img src="../images/join_tit003.gif" /></th>

@@ -1,3 +1,4 @@
+<%@page import="org.json.simple.JSONObject"%>
 <%@page import="java.util.Map"%>
 <%@page import="util.JavascriptUtil"%>
 <%@page import="model.MembershipDAO"%>
@@ -10,37 +11,19 @@ String drv = application.getInitParameter("MariaJDBCDriver");//MariaDB정보로 
 String url = application.getInitParameter("MariaConnectURL");
 
 MembershipDAO dao = new MembershipDAO(drv, url); 
+JSONObject json = new JSONObject();
 
-boolean idCheck = false;
-idCheck = dao.idCheck(id);
 
+boolean idCheck = dao.idCheck(id);
+if(idCheck == false){
+	json.put("result",1);
+	json.put("message", "사용가능한 아이디입니다.");
+}else{
+	json.put("result",0);
+	json.put("message", "중복된 아이디입니다.");
+}
+
+dao.close();
+String jsonStr = json.toJSONString();
+out.print(jsonStr);
 %>
-<script type ="text/javascript">
-function idUse(){
-	
-	if(<%=idCheck%> == false){
-		opener.document.loginfrm.idcheck.value = "<%= id%>";
-		self.close();
-	}
-	else{
-		opener.document.loginfrm.id.value = "";
-		self.close();		
-	}
-
-} 
-</script>
-</head>
-<body>
-	<% if(idCheck == false){ %>  
-	<h3>'<%=id %>'는 사용할수 있는 아이디입니다.</h3>
-	<form name="overlapFrm">
-		<input type="button" value="아이디사용하기" onclick="idUse();"	/>
-	</form>
-	<%}else{ %>
-	<h3>'<%=id %>'는 이미 등록된 아이디입니다.</h3>
-	<form name="overlapFrm">
-		<input type="button" value="아이디사용하기" onclick="idUse();"	/>
-	</form>
-	<%} %>
-</body>
-</html>

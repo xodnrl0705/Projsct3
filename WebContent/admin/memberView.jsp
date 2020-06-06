@@ -1,20 +1,19 @@
-<%@page import="java.net.URLEncoder"%>
+<%@page import="model.MembershipDTO"%>
+<%@page import="model.MembershipDAO"%>
 <%@page import="model.BbsDTO"%>
 <%@page import="model.BbsDAO"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ include file = "isFlag.jsp" %><!-- 필수파라미터 체크로직  -->
 <%@ include file = "isLogin.jsp" %><!-- 필수파라미터 체크로직  -->
 <%
-request.setCharacterEncoding("UTF-8");
 /*
 검색후 파라미터 처리를 위한 추가부분
 	: 리스트에서 검색후 상세보기 , 그리고 다시 리스트보기를 
 	눌렀을때 검색이 유지되도록 처리하기위한 코드삽입
 */
-String queryStr = "bname="+bname+"&";
 String searchColumn  = request.getParameter("searchColumn");
 String searchWord  = request.getParameter("searchWord");
+String queryStr = "";
 if(searchWord!=null){
 	queryStr += "searchColumn=" + searchColumn+"&searchWord="+searchWord+"&";
 }
@@ -24,15 +23,12 @@ if(nowPage == null || nowPage.equals(""))
 	nowPage = "1";
 queryStr += "&nowPage=" + nowPage;
 
-//폼값 받기 - 파라미터로 전달된 게시물의 일련번호
-String num = request.getParameter("num");
-BbsDAO dao = new BbsDAO(application);
 
-//게시물의 조회수 +1증가
-dao.updateVisitCount(num);  
+String id = request.getParameter("id");
+MembershipDAO dao = new MembershipDAO(application);
 
 //게시물을 가져와서 DTO객체로 반환
-BbsDTO dto = dao.selectView(num);  
+MembershipDTO dto = dao.selectView(id);   
 
 dao.close();
 %>
@@ -45,75 +41,82 @@ dao.close();
 	<div id="wrapper">
 		<!-- 사이드바메뉴 -->
 		<%@ include file="./common/indexSidebar.jsp" %>
-	<div id="content-wrapper">
 	<!-- /.content-wrapper -->
+	<div id="content-wrapper">
       	<div class="container-fluid">
-        	<div class="pt-3 pl-3 pr-3">
-			<h3><%=boardTitle %> - <small>View(상세보기)</h3>
 			<!-- 게시판내용 -->
-			<div class="row mt-3 mr-1">
-				<table class="table table-bordered">
-				<colgroup>
-					<col width="20%"/>
-					<col width="30%"/>
-					<col width="20%"/>
-					<col width="*"/>
-				</colgroup>
-				<tbody>
-					<tr>
-						<th class="text-center table-active align-middle">아이디</th>
-						<td><%=dto.getId() %></td>
-						<th class="text-center table-active align-middle">작성일</th>
-						<td><%=dto.getPostdate() %></td>
-					</tr>
-					<tr>
-						<th class="text-center table-active align-middle">작성자</th>
-						<td><%=dto.getName() %></td>
-						<th class="text-center table-active align-middle">조회수</th>
-						<td><%=dto.getVisitcount() %></td>
-					</tr>
-					<tr>
-						<th class="text-center table-active align-middle">제목</th>
-						<td colspan="3"><%=dto.getTitle() %></td>
-					</tr>
-					<tr>
-						<th class="text-center table-active align-middle">내용</th>
-						<td colspan="3" class="align-middle" >
-						<%if(dto.getOfile() != null || dto.getSfile() != null){ 
-							if(bname.equals("photo")){%>
-							<img src="../Upload/<%=dto.getSfile() %>" />
-							<br/><br/><br/>
-						<%} 
-						}%>
-							<%=dto.getContent().replace("\r\n", "<br/>") %>
-						</td>
-					</tr>
-				<%if(bname.equals("dataroom")) {%>
-					<tr>
-						<th class="text-center table-active align-middle">첨부파일</th>
-						<td colspan="3">
-						<%if(dto.getOfile() != null || dto.getSfile() != null){ %>
-							<%=dto.getOfile()%>
-							<a href="Download2.jsp?oName=<%=URLEncoder.encode(dto.getOfile(),"UTF-8") %>&sName=<%=URLEncoder.encode(dto.getSfile(),"UTF-8") %>">[다운로드]</a>
-						<%} %>
-						</td>
-					</tr>
-				<%} %>
-				</tbody>
-				</table>
-			</div>
-			<!-- 버튼부분 시작 -->
-			<div class="row mb-3">
+        	<div class="pt-3 pl-3 pr-3">
+				<h3><a href="memberList.jsp">회원관리 / </a><small>회원정보 / <%=id %></small></h3>
+
+					<div class="row mt-3 mr-1">
+						<table class="table table-bordered">
+							<colgroup>
+								<col width="15%" />
+								<col width="20%" />
+								<col width="15%" />
+								<col width="20%" />
+								<col width="15%" />
+								<col width="15%" />
+							</colgroup>
+							<tbody>
+								<tr>
+									<th class="text-center table-active align-middle">이름</th>
+									<td><%=dto.getName() %></td>
+									<th class="text-center table-active align-middle">아이디</th>
+									<td><%=dto.getId() %></td>
+									<th class="text-center table-active align-middle">비밀번호</th>
+									<td><%=dto.getPass() %></td>
+								</tr>
+								<tr>
+									<th class="text-center table-active align-middle">전화번호</th>
+									<td><%=dto.getTel() %></td>
+									<th class="text-center table-active align-middle">핸드폰번호</th>
+									<td><%=dto.getPhone() %></td>
+									<th class="text-center table-active align-middle">이메일</th>
+									<td><%=dto.getEmail() %></td>
+								</tr>
+								<tr>
+									<th class="text-center table-active align-middle">우편번호</th>
+									<td><%=dto.getZip() %></td>
+									<th class="text-center table-active align-middle">주소</th>
+									<td colspan="4"><%=dto.getAddr() %></td>
+								</tr>
+								<tr>
+									<th class="text-center table-active align-middle">등록일</th>
+									<td><%=dto.getRegidate() %></td>
+									<th class="text-center table-active align-middle">회원등급</th>
+									<td>
+										<%
+										String grade="";
+										switch(dto.getGrade()){
+										case "10":
+											grade = "관리자";
+											break;
+										case "1":
+											grade = "회원";
+											break;
+										default:
+											grade = "???";
+										}
+										%>
+										<%=grade%>
+									</td> 
+									<th class="text-center table-active align-middle">이메일 수신동의</th>
+									<td ><%=dto.getEmailcheck() %></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div class="row mb-3">
 				<div class="col text-right pr-4">
 					<button type="button" class="btn btn-secondary"
-						onclick="location.href='boardEdit.jsp?num=<%=dto.getNum()%>&bname=<%=bname%>';">수정하기</button>
+						onclick="location.href='memberEdit.jsp?id=<%=dto.getId()%>';">수정하기</button>
 					<button type="button" class="btn btn-success"
 						onclick="isDelete();">삭제하기</button>
-					<button type="button" class="btn btn-warning" onclick="location.href='boardList.jsp?<%=queryStr%>';">리스트보기</button>
+					<button type="button" class="btn btn-warning" onclick="location.href='memberList.jsp?<%=queryStr %>';">리스트보기</button>
 				</div>
 				<form name="deleteFrm">
-					<input type="hidden" name="num" value="<%=dto.getNum() %>" />
-					<input type="hidden" name="bname" value="<%=bname %>" />
+					<input type="hidden" name="id" value="<%=dto.getId() %>" />
 				</form>
 				<script>
 					function isDelete() {
@@ -121,16 +124,15 @@ dao.close();
 						if(c){
 							var f = document.deleteFrm;
 							f.method = "post";
-							f.action = "deleteProc.jsp";
+							f.action = "memberDeleteProc.jsp";
 							f.submit();
 						}
 						
 					}
 				</script>
 			</div>
-			<!-- 버튼부분 끝 -->
-      </div>
-      <!-- 게시판내용 끝 -->
+      </div><!-- 게시판내용 끝 -->
+      
       
       <!-- Sticky Footer -->
       <footer class="sticky-footer">

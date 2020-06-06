@@ -14,6 +14,7 @@
 <body id="page-top">
 <script>
 function checkValidate(f) {
+
 	if(f.title.value ==""){
 		alert("제목을 입력해주세요");
 		f.title.focus();
@@ -24,23 +25,38 @@ function checkValidate(f) {
 		f.content.focus();
 		return false
 	}
+	<%if(bname.equals("photo")){%>
+
+		if(f.chumFile1.value == ""){
+			alert("파일첨부를 해주세요");
+			return false
+		}
+	<%}%>
 }
+$(function() {
+  $( "#datepicker" ).datepicker();
+} );
+
+
+
+
 
 
 </script>
-
 
 	<%@ include file="./common/indexTop.jsp" %>
 	<div id="wrapper">
 		<!-- 사이드바메뉴 -->
 		<%@ include file="./common/indexSidebar.jsp" %>
 	<div id="content-wrapper">
-	
-      	<div class="container-fluid"><!-- 게시판내용 -->
+		<!-- 게시판내용 -->
+      	<div class="container-fluid">
         	<div class="pt-3 pl-3 pr-3">
         	<h3>게시판 - <small>Write(작성)</small></h3>
         	<div class="pt-3 pl-3 pr-3">
-				<form name="writeFrm" method="post" action="writeProc.jsp" onsubmit="return checkValidate(this);">
+			<!-- 정보자료실,사진 게시판  -->
+			<%if(bname.equals("dataroom")||bname.equals("photo")) {%>
+				<form name="writeFrm" method="post" action="chum_writeProc.jsp" onsubmit="return checkValidate(this);" enctype="multipart/form-data">
 					<input type="hidden" name="bname" value="<%=bname %>"/> <!--검색시 필수파라미터인 bname이 전달되어야한다.  -->
 					<table class="table table-bordered table-striped">
 						<colgroup>
@@ -64,10 +80,14 @@ function checkValidate(f) {
 								</td>
 							</tr>
 							<tr>
-								<th class="text-center" name="attachedfile" id="attachedfile"
+								<th class="text-center" 
 									style="vertical-align:middle;">첨부파일</th>
 								<td>
-									<input type="file" class="form-control" />
+									<% if(bname.equals("photo")){%>
+										<input type="file" accept="image/*" class="form-control" id='chumFile1' name='chumFile1'/>
+									<%}else{%>
+										<input type="file" class="form-control" id='chumFile1' name='chumFile1'/>
+									<%} %>
 								</td>
 							</tr>
 						</tbody>
@@ -80,9 +100,57 @@ function checkValidate(f) {
 						</div>
 					</div>
 				</form>	
+				<!-- 정보자료실,사진 게시판 끝  -->
+				<!-- 공지사항,자유 게시판  -->
+			<% }else{ %>
+				<form name="writeFrm" method="post" action="writeProc.jsp" onsubmit="return checkValidate(this);" >
+						<input type="hidden" name="bname" value="<%=bname %>"/> <!--검색시 필수파라미터인 bname이 전달되어야한다.  -->
+						<table class="table table-bordered table-striped">
+							<colgroup>
+								<col width="20%"/>
+								<col width="*"/>
+							</colgroup>
+							<tbody>
+								<tr>
+									<th class="text-center" 
+										style="vertical-align:middle;">제목</th>
+									<td>
+										<input type="text" class="form-control" name="title" id="title" />
+									</td>
+								</tr>
+								<tr>
+									<th class="text-center" 
+										style="vertical-align:middle;">일정날짜</th>
+									<td>
+										<p><input type="date" name="datepicker" id="datepicker" size="30"/></p>
+									</td>
+								</tr>
+								<tr>
+									<th class="text-center" 
+										style="vertical-align:middle;">내용</th>
+									<td>
+										<textarea rows="10" name="content" id="content"
+											class="form-control" ></textarea>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="row mb-3">
+							<div class="col text-right">
+								<button type="submit" class="btn btn-danger">전송하기</button>
+								<button type="reset" class="btn btn-dark">Reset</button>
+								<button type="button" class="btn btn-warning" onclick="location.href='boardList.jsp?bname=<%=bname %>';">리스트보기</button>
+							</div>
+						</div>
+					</form>	
+					<!-- 공지사항,자유 게시판 게시판 끝 -->
+			<%} %>
+				
+				
 			</div>	
 			</div>
-      	</div><!-- 게시판내용 끝 -->
+      	</div>
+      	<!-- 게시판내용 끝 -->
 	    <!-- Sticky Footer -->
 	    <footer class="sticky-footer">
 	      <div class="container my-auto">

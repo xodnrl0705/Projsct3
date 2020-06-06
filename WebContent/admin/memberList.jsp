@@ -13,7 +13,10 @@
 <%
 request.setCharacterEncoding("UTF-8");
 
-MembershipDAO dao = new MembershipDAO(application);
+String drv = application.getInitParameter("MariaJDBCDriver");
+String url = application.getInitParameter("MariaConnectURL");
+
+MembershipDAO dao = new MembershipDAO(drv,url);
 Map<String,Object> param = new HashMap<String,Object>();
 
 String queryStr = "";
@@ -75,7 +78,7 @@ dao.close();
 			<div class="container-fluid">
 				<!-- 게시판내용 -->
 				<div class="pt-3 pl-3 pr-3">
-					<h3>회원관리</h3>
+					<h3><a href="memberList.jsp">회원관리</a></h3>
 					<!-- 검색부분 -->
 					<div class="row">
 						<form class="form-inline ml-auto" name="searchFrm" method="get">
@@ -148,15 +151,30 @@ dao.close();
 								<tr>
 									<td class="text-center"><%=vNum%></td>
 									<td class="text-center"><a
-										href="memberView.jsp?name=<%=dto.getName()%>&nowPage=<%=nowPage%>&<%=queryStr%>"><%=dto.getName()%></a></td>
+										href="memberView.jsp?id=<%=dto.getId()%>&nowPage=<%=nowPage%>&<%=queryStr%>"><%=dto.getName()%></a></td>
 									<td class="text-center"><%=dto.getId()%></td> 
 									<td class="text-center"><%=dto.getPhone()%></td>
 									
 									<td class="text-center"><%=dto.getEmail()%></td>
-									<td class="text-center"><%=dto.getGrade()%></td>
+									<td class="text-center">
+										<%
+										String grade="";
+										switch(dto.getGrade()){
+										case "10":
+											grade = "관리자";
+											break;
+										case "1":
+											grade = "회원";
+											break;
+										default:
+											grade = "???";
+										}
+										%>
+										<%=grade%>
+									</td>
 									<td class="text-center"><button type="button"
 											class="btn btn-secondary btn-sm"
-											onclick="location.href='memberEdit.jsp?&Id=<%=dto.getId()%>';">수정</button></td>
+											onclick="location.href='memberEdit.jsp?&id=<%=dto.getId()%>';">수정</button></td>
 									<td class="text-center"><button type="button"
 											class="btn btn-success btn-sm" id="deletebtn"
 											onclick="isDelete();">삭제</button></td>
@@ -164,7 +182,7 @@ dao.close();
 										function isDelete() {
 											var c = confirm("삭제할까요?");
 											if(c){
-												location.href = "deleteProc.jsp?&id=<%=dto.getId()%>";
+												location.href = "memberDeleteProc.jsp?&id=<%=dto.getId()%>";
 											}
 											
 										}
@@ -181,7 +199,7 @@ dao.close();
 						<div class="col">
 							<!-- 페이지번호 부분 -->
 							<ul class="pagination justify-content-center">
-								<%=PagingUtil.pagingBS4(totalRecordCount, pageSize, blockPage, nowPage, "boardList.jsp?"+queryStr) %> 
+								<%=PagingUtil.pagingBS4(totalRecordCount, pageSize, blockPage, nowPage, "memberList.jsp?"+queryStr) %> 
 							</ul>
 						</div>				
 					</div>

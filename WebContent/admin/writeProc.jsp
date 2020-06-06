@@ -1,17 +1,19 @@
+<%@page import="java.util.Date"%>
+<%@page import="java.io.File"%>
+<%@page import="java.text.SimpleDateFormat"%>
+<%@page import="com.oreilly.servlet.MultipartRequest"%>
+<%@page import="com.oreilly.servlet.multipart.DefaultFileRenamePolicy"%>
+<%@page import="com.oreilly.servlet.multipart.FileRenamePolicy"%>
 <%@page import="model.BbsDAO"%>
 <%@page import="model.BbsDTO"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!-- 글작성 완료 전 로그인 체크하기 -->
-<%@ include file="./isLogin.jsp" %>
 <%@ include file="./isFlag.jsp" %>
 <%
-request.setCharacterEncoding("UTF-8");
-
 //폼값전송받기
 String title = request.getParameter("title");//제목
-String content = request.getParameter("content");//제목
-
+String content = request.getParameter("content");//내용
 
 BbsDTO dto = new BbsDTO();
 dto.setTitle(title);
@@ -30,7 +32,7 @@ BbsDAO dao = new BbsDAO(application);
 //사용자의 입력값을 DTO객체에 저장후 파라미터로 잔달
 int affected = dao.insertWrite(dto);  	
 
-if(affected==1){
+if(affected == 1){ 
 	//글쓰기에 성공했을때..
 	response.sendRedirect("boardList.jsp?bname="+bname);
 }

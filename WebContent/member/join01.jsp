@@ -476,20 +476,19 @@
 				<br />
 				회사의 개인정보보호정책은 관련 법률 및 고시의 변경 또는 내부 운영방침의 변경에 따라 변경될 수 있습니다. 회사의 개인정보보호정책이 수정될 경우 변경된 사항은 홈페이지를 통하여 공지합니다. <br />
 				</div>
-				<form name="frm">
-					<p style="text-align:center; margin-bottom:20px;"><input type="checkbox" name="agreement1" value=""  >이용약관과 개인정보취급방침에 동의합니다.</p>
-					<p style="text-align:center; margin-bottom:20px"><a href="javascript:void(0);" onclick="ischecked();"><img src="../images/btn01.gif" />
+				<form name="frm" action="join02.jsp">
+					<p style="text-align:center; margin-bottom:20px;"><input type="checkbox" name="agreement1" value="1"  >이용약관과 개인정보취급방침에 동의합니다.</p>
+					<p style="text-align:center; margin-bottom:20px"><input type="image" src="../images/btn01.gif" alt="로그인" />
+
 					&nbsp;&nbsp;<a href = "../main/main.jsp"><img src="../images/btn02.gif" /></a></p>
 				</form>
 				
 				<script>
 					function ischecked(){
-						var f = document.forms.frm;
+						var f = document.getElementById("frm");
 						if(!(f.agreement1.checked)){
 							alert("약관에 동의해주세요");
 							return false;
-						}else{
-							location.href = "join02.jsp" ;
 						}
 					}
 				

@@ -8,6 +8,6 @@ if(session.getAttribute("USER_ID")==null){
 		location.href = "../admin/login.html";
 	</script>
 <%
-	return;
+return;
 }
 %>

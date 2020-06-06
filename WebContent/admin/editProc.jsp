@@ -12,14 +12,12 @@ request.setCharacterEncoding("UTF-8");
 String num = request.getParameter("num");//제목
 String title = request.getParameter("title");//제목
 String content = request.getParameter("content");//내용
-String attachedfile = request.getParameter("attachedfile");//내용
 
 
 BbsDTO dto = new BbsDTO();
 dto.setNum(num);
 dto.setTitle(title);
 dto.setContent(content);
-dto.setAttachedfile(attachedfile);
 
 BbsDAO dao = new BbsDAO(application);
 //DTO객체를 DAO로 전달하여 게시물 업데이트(수정)

@@ -77,9 +77,10 @@ public class BbsDAO {
 			psmt.setString(2, dto.getContent());
 			psmt.setString(3, dto.getId());
 			psmt.setString(4, dto.getBname());
+
 			
 			affected = psmt.executeUpdate();
-			
+			System.out.println("insert 완료: "+affected);
 		}
 		catch (Exception e) {
 			System.out.println("insert중 예외발생");
@@ -87,6 +88,43 @@ public class BbsDAO {
 		}
 		return affected;
 	}
+	//글쓰기 처리 메소드(파일추가버전)
+	public int insertchumWrite(BbsDTO dto) {
+		//실제 입력된 행의 갯수를 저장하기 위한 변수
+		int affected=0;
+		try {
+			/*
+			 	Oracle에서는 시퀀스를 사용해서 일련번호를 입력하지만
+			 	MariaDB에서는 auto_increment 제약조건으로 컬럼 자체를
+			 	자동증가 컬럼으로 지정한다. 자동증가컬럼은 임의의 값을
+			 	입력하는것보다 쿼리에서 제외시켜 주는것이 좋다.
+			*/
+			String query = "INSERT INTO multi_board ( "
+					+ " title,content,id,visitcount,bname,ofile,sfile) "
+					+ " VALUES ( "
+					+ " ?, ?, ?, 0, ?, ?, ?)";
+			
+			psmt = con.prepareStatement(query);
+			psmt.setString(1, dto.getTitle());
+			psmt.setString(2, dto.getContent());
+			psmt.setString(3, dto.getId());
+			psmt.setString(4, dto.getBname());
+			psmt.setString(5, dto.getOfile());
+			psmt.setString(6, dto.getSfile());
+
+			
+			affected = psmt.executeUpdate();
+			System.out.println("insert 완료: "+affected);
+		}
+		catch (Exception e) {
+			System.out.println("insert중 예외발생");
+			e.printStackTrace();
+		}
+		return affected;
+	}
+	
+	
+	
 	
 	/*
 	게시판 리스트에서 게시물의 갯수를 count()함수를 통해 구해서 반환함.
@@ -150,6 +188,8 @@ public class BbsDAO {
 				dto.setPostdate(rs.getDate("postdate"));
 				dto.setId(rs.getString("id"));
 				dto.setVisitcount(rs.getString("visitcount"));
+				dto.setOfile(rs.getString("ofile"));
+				dto.setSfile(rs.getString("sfile"));
 				
 				bbs.add(dto);
 			}
@@ -199,10 +239,10 @@ public class BbsDAO {
 				dto.setContent(rs.getString("content"));
 				dto.setId(rs.getString("id"));
 				dto.setVisitcount(rs.getString("visitcount"));
+				dto.setOfile(rs.getString("ofile"));
+				dto.setSfile(rs.getString("sfile"));
 				dto.setPostdate(rs.getDate("postdate"));
 				//테이블join으로 컬럼추가
-				dto.setName(rs.getString("attachedfile"));
-				dto.setName(rs.getString("downcount"));
 				dto.setName(rs.getString("name"));
 				System.out.println("상세보기 성공");
 			}
@@ -218,14 +258,13 @@ public class BbsDAO {
 		int affected = 0;
 		try {
 			String query = "UPDATE multi_board SET "
-					+ " title=?, content=?, attachedfile=? "
+					+ " title=?, content=?"
 					+ " WHERE num=?";
 			
 			psmt = con.prepareStatement(query);
 			psmt.setString(1, dto.getTitle());
 			psmt.setString(2, dto.getContent());
-			psmt.setString(3, dto.getAttachedfile());
-			psmt.setString(4, dto.getNum());
+			psmt.setString(3, dto.getNum());
 			
 			affected = psmt.executeUpdate();
 			System.out.println("수정완료");
@@ -237,6 +276,36 @@ public class BbsDAO {
 		
 		return affected;
 	}
+	//첨부파일 업데이트문
+	public int updatechumEdit(BbsDTO dto) {
+		int affected = 0;
+		try {
+			String query = "UPDATE multi_board SET title=?, content=?, ofile=?, sfile=? WHERE num=? ";
+			
+			psmt = con.prepareStatement(query);
+			psmt.setString(1, dto.getTitle());
+			psmt.setString(2, dto.getContent());
+			psmt.setString(3, dto.getOfile());
+			psmt.setString(4, dto.getSfile());
+			psmt.setString(5, dto.getNum());
+			
+			affected = psmt.executeUpdate();
+			System.out.println("수정완료");
+		}
+		catch (Exception e) {
+			System.out.println("update중 예외발생");
+			e.printStackTrace();
+		}
+		
+		return affected;
+	}
+	
+	
+	
+	
+	
+	
+	
 	//게시물 삭제 처리
 	public int delete(BbsDTO dto) {
 		int affected = 0;

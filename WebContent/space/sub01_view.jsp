@@ -1,3 +1,4 @@
+<%@page import="java.net.URLEncoder"%>
 <%@page import="model.BbsDTO"%>
 <%@page import="model.BbsDAO"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
@@ -51,8 +52,8 @@ dao.close();
 						<img src="../images/center/house.gif" />&nbsp;&nbsp;열린공간&nbsp;>&nbsp;<%=bname%>
 					<p>
 				</div>
+				<!-- view부분  -->
 				<div>
-					<!-- view부분  -->
 					<table class="table table-bordered">
 						<colgroup>
 							<col width="20%" />
@@ -74,44 +75,45 @@ dao.close();
 								<td><%=dto.getVisitcount() %></td>
 							</tr>
 							<tr>
-							<%if(bname.equals("dataroom")) {%>
-								<th class="text-center" style="vertical-align: middle;">제목</th>
-								<td><%=dto.getTitle() %></td>
-								<th class="text-center" style="vertical-align: middle;">다운로드수</th>
-								<td><%=dto.getDowncount() %></td> 
-							
-							<%}else{ %>
-							
 								<th class="text-center" style="vertical-align: middle;">제목</th>
 								<td colspan="3"><%=dto.getTitle() %></td>
-							
-							<%} %>
 							</tr>
 							<tr>
 								<th class="text-center" style="vertical-align: middle;">내용</th>
-								<td colspan="3" class="align-middle" style="height:200px;">
+								<td colspan="3" class="align-middle" >
+								<%if(dto.getOfile() != null || dto.getSfile() != null){ 
+									if(bname.equals("photo")){%>
+									<img src="../Upload/<%=dto.getSfile() %>" />
+									<br/><br/><br/>
+								<%} 
+								}%>
 									<%=dto.getContent().replace("\r\n", "<br/>") %>
-								</td>
+							</td>
 							</tr>
-							<%if (bname.equals("dataroom")) {%>
+						<% if (bname.equals("dataroom")) {%>
 							<tr>
 								<th class="text-center" style="vertical-align: middle;">첨부파일</th>
 								<td colspan="3">
-									파일명.jpg <a href="">[다운로드]</a>
+							<% if(dto.getOfile() != null || dto.getSfile() != null){ %>
+									<%=dto.getOfile()%>
+									<a href="Download2.jsp?oName=<%=URLEncoder.encode(dto.getOfile(),"UTF-8") %>&sName=<%=URLEncoder.encode(dto.getSfile(),"UTF-8") %>">[다운로드]</a>
+							<% } %>
 								</td>
 							</tr>
-							<% } %>
+						<% } %>
 						</tbody>
 					</table>
 
 					<!-- 각종버튼부분 -->
-					<%if(bname.equals("freeboard")){ %>
+					<%if(bname.equals("freeboard")||bname.equals("photo")||bname.equals("dataroom")){ %>
 					<div class="row mb-3">
 						<div class="col text-right pr-3">
+						<% if(session.getAttribute("USER_ID").equals(dto.getId())) {%>
 							<button type="button" class="btn btn-secondary"
-								onclick="location.href='sub01_edit.jsp?num=<%=dto.getNum()%>&bname=<%=bname%>';">수정하기</button>
-							<button type="button" class="btn btn-success"
+								onclick="location.href='sub01_edit.jsp?num=<%=dto.getNum()%>&bname=<%=bname%>&id=<%=session.getAttribute("USER_ID")%>';">수정하기</button>
+							<button type="button" class="btn btn-success"      
 								onclick="isDelete();">삭제하기</button>
+						<% } %>
 							<button type="button" class="btn btn-warning" onclick="location.href='sub01_list.jsp?<%=queryStr%>';">리스트보기</button>
 						</div>
 						<form name="deleteFrm">

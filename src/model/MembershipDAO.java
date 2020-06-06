@@ -86,9 +86,10 @@ public class MembershipDAO {
 		return totalCount;
 	}
  	
- 	//<관리자모드:회원관리>게시판 리스트 페이지 처리
+ 	//<관리자모드:회원관리>리스트 페이지 처리
 	public List<MembershipDTO> selectListPage(Map<String, Object> map){
 		List<MembershipDTO> bbs = new Vector<MembershipDTO>();
+		String grade="";
 		
 		String query = "SELECT * FROM membership" ;
 		if(map.get("Word")!=null) {
@@ -118,7 +119,8 @@ public class MembershipDAO {
 				dto.setId(rs.getString("id"));
 				dto.setPhone(rs.getString("phone"));
 				dto.setEmail(rs.getString("email"));
-				dto.setEmailcheck(rs.getString("emailcheck"));
+				
+				dto.setGrade(rs.getString("grade"));
 				
 				bbs.add(dto);
 			}
@@ -129,10 +131,88 @@ public class MembershipDAO {
 		}
 		return bbs;
 	}
- 	
- 	
- 	
-   
+	
+	//<관리자모드:회원관리>클릭한id의 정보를 가져와서 DTO객체에 저장후 반환
+	public MembershipDTO selectView(String id) {
+		MembershipDTO dto = new MembershipDTO();
+		String grade="";
+		
+		String query = "SELECT * FROM membership WHERE id = ? ";
+		try {
+			psmt = con.prepareStatement(query);
+			psmt.setString(1, id);
+			rs = psmt.executeQuery();
+			if(rs.next()) {
+				dto.setName(rs.getString("name"));
+				dto.setId(rs.getString("id"));
+				dto.setPass(rs.getString("pass"));
+				dto.setTel(rs.getString("tel"));
+				dto.setPhone(rs.getString("phone"));
+				dto.setEmail(rs.getString("email"));
+				dto.setZip(rs.getString("zip"));
+				dto.setAddr(rs.getString("addr"));
+				dto.setRegidate(rs.getDate("regidate"));
+				dto.setGrade(rs.getString("grade"));
+				dto.setEmailcheck(rs.getString("emailcheck"));
+				System.out.println("상세보기 성공");
+			}
+		}
+		catch (Exception e) {
+			System.out.println("상세보기시 예외발생");
+			e.printStackTrace();
+		}
+		return dto;
+	}
+	//<관리자모드:회원관리>회원정보수정
+	public int updateEdit(MembershipDTO dto) {
+		int affected = 0;
+		try {
+			String query = "UPDATE membership SET "
+					+ " name = ?, pass = ?, tel = ?, phone = ?, email = ?, grade = ?, zip=?, addr=? "
+					+ " WHERE id=?";
+			
+			psmt = con.prepareStatement(query);
+			psmt.setString(1, dto.getName());
+			psmt.setString(2, dto.getPass());
+			psmt.setString(3, dto.getTel());
+			psmt.setString(4, dto.getPhone());
+			psmt.setString(5, dto.getEmail());
+			psmt.setString(6, dto.getGrade());
+			psmt.setString(7, dto.getZip());
+			psmt.setString(8, dto.getAddr());
+			psmt.setString(9, dto.getId());
+			
+			affected = psmt.executeUpdate();
+			System.out.println("수정완료" + dto.getGrade());
+		}
+		catch (Exception e) {
+			System.out.println("update중 예외발생");
+			System.out.println("수정완료" + dto.getEmail());
+			e.printStackTrace();
+		}
+		
+		return affected;
+	}
+	
+	//<관리자모드:회원관리>회원 삭제 처리
+	public int delete(MembershipDTO dto) {
+		int affected = 0;
+		try {
+			String query = "DELETE FROM membership WHERE id=? ";
+			
+			psmt = con.prepareStatement(query);
+			psmt.setString(1,dto.getId());
+			
+			affected = psmt.executeUpdate();
+			
+		}
+		catch (Exception e) {
+			System.out.println("delete중 예외발생");
+			e.printStackTrace();
+		}
+		return affected;
+	}
+	
    	//회원가입 하는 메소드(완료)
     public int memberJoin(MembershipDTO dto) {
     	

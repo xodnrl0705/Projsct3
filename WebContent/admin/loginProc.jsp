@@ -20,6 +20,7 @@ if(memberInfo.get("id")!=null && memberInfo.get("grade").equals("10")){
 	session.setAttribute("USER_ID", memberInfo.get("id"));
 	session.setAttribute("USER_PW", memberInfo.get("pass"));
 	session.setAttribute("USER_NAME", memberInfo.get("name"));
+	session.setAttribute("USER_GRADE", memberInfo.get("grade"));
 	
 	response.sendRedirect("index.jsp");
 }else if(memberInfo.get("id")!=null && memberInfo.get("grade") != "10"){

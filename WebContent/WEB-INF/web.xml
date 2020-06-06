@@ -16,7 +16,17 @@
   <!-- 페이지사이즈정보 -->
   <context-param>
   	<param-name>PAGE_SIZE</param-name>
-  	<param-value>10</param-value>
+  	<param-value>5</param-value>
+  </context-param>
+  <context-param>
+  	<param-name>BLOCK_PAGE</param-name>
+  	<param-value>5</param-value>
+  </context-param>
+  
+  <!-- 이미지 페이지사이즈정보 -->
+  <context-param>
+  	<param-name>IMG_PAGE_SIZE</param-name>
+  	<param-value>6</param-value>
   </context-param>
   <context-param>
   	<param-name>BLOCK_PAGE</param-name>

@@ -1,3 +1,4 @@
+<%@page import="java.net.URLEncoder"%>
 <%@page import="util.PagingUtil"%>
 <%@page import="model.BbsDTO"%>
 <%@page import="java.util.List"%>
@@ -8,6 +9,7 @@
     pageEncoding="UTF-8"%>
 <%@ include file="./isLogin.jsp" %>
 <%@ include file="./isFlag.jsp" %>
+<%@ include file="./common/CalendarScript.jsp" %>
 <%
 //한글깨짐처리 - 검색폼에서 입력된 한글이 전송되기때문
 request.setCharacterEncoding("UTF-8");
@@ -45,25 +47,46 @@ int pageSize =
 Integer.parseInt(application.getInitParameter("PAGE_SIZE"));
 int blockPage = 
 Integer.parseInt(application.getInitParameter("BLOCK_PAGE"));
+int imgpageSize =
+Integer.parseInt(application.getInitParameter("IMG_PAGE_SIZE"));
 
-//전체페이지수 계산
-int totalPage = (int)Math.ceil((double)totalRecordCount/pageSize);
+//***페이지계산 변수설정
+int totalPage;
+int nowPage;
+int start;
+int end;
+//페이지계산 photo는 6개의 자료씩 추출해야한다.
+if(bname.equals("photo")){
+	//전체페이지수 계산
+	totalPage = (int)Math.ceil((double)totalRecordCount/imgpageSize);
+	
+	/*
+	현제페이지번호 : 파라미터가 없을때는 무조건 1페이지로 지정하고, 있을때는 해당 값을
+		얻어와서 지정한다. 즉 리스트에 처음 진입했을때는 1페이지가 된다.
+	*/
+	nowPage = (request.getParameter("nowPage")==null
+	|| request.getParameter("nowPage").equals(""))
+	? 1 : Integer.parseInt(request.getParameter("nowPage"));
+	
+	//한페이지에 출력할 게시물의 범위를 결정한다. 
+	start = (nowPage-1)*imgpageSize;
+	end = imgpageSize;
+}else{
 
-/*
-현제페이지번호 : 파라미터가 없을때는 무조건 1페이지로 지정하고, 있을때는 해당 값을
-	얻어와서 지정한다. 즉 리스트에 처음 진입했을때는 1페이지가 된다.
-*/
-int nowPage = (request.getParameter("nowPage")==null
-|| request.getParameter("nowPage").equals(""))
-? 1 : Integer.parseInt(request.getParameter("nowPage"));
+	totalPage = (int)Math.ceil((double)totalRecordCount/pageSize);
 
-//한페이지에 출력할 게시물의 범위를 결정한다. 
-int start = (nowPage-1)*pageSize;
-int end = pageSize;
+	nowPage = (request.getParameter("nowPage")==null
+	|| request.getParameter("nowPage").equals(""))
+	? 1 : Integer.parseInt(request.getParameter("nowPage"));
+
+	start = (nowPage-1)*pageSize;
+	end = pageSize;
+}//페이지계산끝
+
 
 //게시물의 범위를 Map컬렉션에 저장하고 DAO로 전달한다.
-param.put("start", start);
-param.put("end", end);
+param.put("start", start); 
+param.put("end", end); 
 //조건에 맞는 레코드를 select하여 결과셋을 List컬렉션으로 반환받음
 List<BbsDTO> bbs = dao.selectListPage(param); 
 dao.close();
@@ -104,9 +127,10 @@ dao.close();
 			</form>	
 			</div>
 			<!-- 검색부분 끝-->
+			<!-- 자유,공지, 자료게시판리스트부분 -->
+		<% if(bname.equals("freeboard")||bname.equals("notice")||bname.equals("dataroom")){%> 
 			<div class="row mt-3">
-				<!-- 게시판리스트부분 -->
-				<table class="table table-bordered table-hover table-striped">
+				<table class="table table-bordered table-hover table-striped" style=TABLE-layout:fixed>
 				<colgroup>
 					<col width="60px"/>
 					<col width="*"/>
@@ -149,15 +173,23 @@ dao.close();
 					for(BbsDTO dto : bbs){
 						vNum = totalRecordCount - (((nowPage-1)*pageSize)+countNum++);
 					%>
-					<!-- 리스트반복 start -->
+					<!-- 리스트반복 시작 -->
 					<tr>
 						<td class="text-center"><%=vNum %></td>
-						<td class="text-left"><a href="boardView.jsp?num=<%=dto.getNum() %>&nowPage=<%=nowPage%>&<%=queryStr%>"><%=dto.getTitle() %></a></td>
+						<td class="text-left" style="text-overflow : ellipsis; overflow : hidden;"><a href="boardView.jsp?num=<%=dto.getNum() %>&nowPage=<%=nowPage%>&<%=queryStr%>"><%=dto.getTitle() %></a></td>
 						<td class="text-center"><%=dto.getId() %></td>
 						<td class="text-center"><%=dto.getPostdate() %></td>
 						<td class="text-center"><%=dto.getVisitcount() %></td>
-					<%if(bname.equals("dataroom")) {%>
-						<td class="text-center"><i class="material-icons" style="font-size:20px">attach_file</i></td>
+					<% if(bname.equals("dataroom")) { %>
+						
+						<td class="text-center">
+						<%if(dto.getOfile() != null || dto.getSfile() != null){ %>
+						
+						<a href="Download2.jsp?oName=<%=URLEncoder.encode(dto.getOfile(),"UTF-8") %>&sName=<%=URLEncoder.encode(dto.getSfile(),"UTF-8") %>">
+						<img src="../images/disk.png" width="20" alt="" />
+						</a>
+						<%} %>
+						</td>
 					<%} %>	
 						<td class="text-center"><button type="button" class="btn btn-secondary btn-sm"
 							onclick="location.href='boardEdit.jsp?bname=<%=bname %>&num=<%=dto.getNum()%>';">수정</button></td>
@@ -180,20 +212,233 @@ dao.close();
 				</tbody>
 				</table>
 			</div>
+			<!-- 자유,공지, 자료게시판리스트부분 끝-->
+		<% } else if(bname.equals("photo")) {%>
+			<!-- 사진게시판 리스트부분 -->
+			<div class="row mt-3">
+				<% if(bbs.isEmpty()){%> 
+				<table class="table table-bordered table-hover table-striped">
+					<tr>
+						<td colspan="8" align="center" height="100">
+							등록된 게시물이 없습니다.
+						</td>
+					</tr>
+				</table>
+				<%}else{ 
+					int vNum = 0;
+					int countNum = 0;
+					
+						for(BbsDTO dto : bbs){
+							vNum = totalRecordCount - (((nowPage-1)*imgpageSize)+countNum++);
+						%>
+				<!-- 리스트반복 시작 -->
+				<table class="table" style="width: 100px;">
+					<tr>
+						<td><%=vNum %></td>
+					</tr>
+					<tr>
+						<td><img style="width: 200px; height: 200px" src="../Upload/<%=dto.getSfile() %>" /></td>
+					</tr>
+					<tr>
+						<td>
+						<a href="boardView.jsp?num=<%=dto.getNum() %>&nowPage=<%=nowPage%>&<%=queryStr%>">
+						<%=dto.getTitle() %></a>
+						</td>
+					</tr>
+					<tr>
+						<td><%=dto.getId() %></td>
+					</tr>
+					<tr>
+						<td><%=dto.getPostdate() %></td>
+					</tr>
+					<tr>
+						<td>조회수 : <%=dto.getVisitcount() %></td>
+					</tr>
+				</table>
+					<%   }
+					}	%><!-- 리스트반복 끝 -->
+			</div>
+			<!-- 사진게시판 리스트부분 끝-->
+			<%} else{%>
+			<!-- 켈린더게시판 리스트부분시작 -->
+			<div class="row mt-3">
+				<form name="calendarFrm" id="calendarFrm" action="" method="post">
+		<div id="content" style="width: 712px;">
+			<table width="100%" border="0" cellspacing="1" cellpadding="1">
+				<tr>
+					<td align="right"><input type="button" value="오늘"
+						onclick="javascript:location.href='./boardList.jsp?bname=<%=bname%>' "/>
+					</td>
+				</tr>
+			</table>
+			<!--날짜 네비게이션  -->
+			<table width="100%" border="0" cellspacing="1" cellpadding="1"
+				id="KOO" bgcolor="#F3F9D7" style="border: 1px solid #CED99C">
+				<tr>
+					<td height="60">
+						<table width="100%" border="0" cellspacing="0" cellpadding="0">
+							<tr>
+								<td height="10"></td>
+							</tr>
+							<tr>
+								<td align="center"><a
+									href="./boardList.jsp?bname=<%=bname%>&year=<%=year-1%>&amp;month=<%=month%>"
+									target="_self"> <b>&lt;&lt;</b>
+									<!-- 이전해 -->
+								</a> <%if(month > 0 ){ %> <a
+									href="./boardList.jsp?bname=<%=bname%>&year=<%=year%>&amp;month=<%=month-1%>"
+									target="_self"> <b>&lt;</b>
+									<!-- 이전달 -->
+								</a> <%} else {%> <b>&lt;</b> <%} %> &nbsp;&nbsp; <%=year%>년 <%=month+1%>월
+									&nbsp;&nbsp; <%if(month < 11 ){ %> <a
+									href="./boardList.jsp?bname=<%=bname%>&year=<%=year%>&amp;month=<%=month+1%>"
+									target="_self"> <!-- 다음달 -->
+										<b>&gt;</b>
+								</a> <%}else{%> <b>&gt;</b> <%} %> <a
+									href="./boardList.jsp?bname=<%=bname%>&year=<%=year+1%>&amp;month=<%=month%>"
+									target="_self"> <!-- 다음해 -->
+										<b>&gt;&gt;</b>
+								</a></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+			<br>
+			<table border="0" cellspacing="1" cellpadding="1" bgcolor="#FFFFFF">
+				<THEAD>
+					<TR bgcolor="#CECECE">
+						<TD width='100px'>
+							<DIV align="center">
+								<font color="red">일</font>
+							</DIV>
+						</TD>
+						<TD width='100px'>
+							<DIV align="center">월</DIV>
+						</TD>
+						<TD width='100px'>
+							<DIV align="center">화</DIV>
+						</TD>
+						<TD width='100px'>
+							<DIV align="center">수</DIV>
+						</TD>
+						<TD width='100px'>
+							<DIV align="center">목</DIV>
+						</TD>
+						<TD width='100px'>
+							<DIV align="center">금</DIV>
+						</TD>
+						<TD width='100px'>
+							<DIV align="center">
+								<font color="#529dbc">토</font>
+							</DIV>
+						</TD>
+					</TR>
+				</THEAD>
+				<TBODY>
+					<TR>
+						<%
+		//처음 빈공란 표시
+		for(int index = 1; index < start1 ; index++ ){
+		  out.println("<TD >&nbsp;</TD>");
+		  newLine++;
+		}
+		for(int index = 1; index <= endDay; index++){
+		       String color = "";
+		       
+		       if(newLine == 0){          
+		    	   color = "RED";
+		       }else if(newLine == 6){    
+		    	   color = "#529dbc";
+		       }else{                     
+		    	   color = "BLACK";};
+
+       String sUseDate = Integer.toString(year); 
+       sUseDate += Integer.toString(month+1).length() == 1 ? "0" + Integer.toString(month+1) : Integer.toString(month+1);
+       sUseDate += Integer.toString(index).length() == 1 ? "0" + Integer.toString(index) : Integer.toString(index);
+       
+       int iUseDate = Integer.parseInt(sUseDate);
+       String backColor = "#EFEFEF";
+       if(iUseDate == intToday ) {
+
+             backColor = "#c9c9c9";
+
+       }
+
+       out.println("<TD valign='top' align='left' height='92px' bgcolor='"+backColor+"' nowrap>");
+
+       %>
+		<!--여기부터  -->
+						<font color='<%=color%>'> <%=index %>
+						</font>
+						<%
+
+       out.println("<BR>");
+       out.println(iUseDate);
+       out.println("<BR>");
+		//여기까지가 제목넣을 내용
+		
+       //기능 제거 
+       out.println("</TD>");
+       newLine++;
+       if(newLine == 7)
+       {
+         out.println("</TR>");
+         if(index <= endDay)
+         {
+           out.println("<TR>");
+         }
+         newLine=0;
+       }
+}
+//마지막 공란 LOOP
+while(newLine > 0 && newLine < 7)
+{
+
+  out.println("<TD>&nbsp;</TD>");
+
+  newLine++;
+
+}
+%>
+
+					</TR>
+
+				</TBODY>
+
+			</TABLE>
+
+		</DIV>
+
+	</form>
+			<!-- 켈린더게시판 리스트부분 끝 -->
+			</div>
+			<%} %>
+			<!-- 글쓰기 버튼부분 시작 -->
 			<div class="row">
 				<div class="col text-right">
 					<button type="button" class="btn btn-primary"
 						onclick="location.href='boardWrite.jsp?bname=<%=bname %>';">글쓰기</button>
 				</div>
 			</div>
+			<!-- 글쓰기 버튼부분 끝 -->
+			<!-- 페이지번호 부분 -->
 			<div class="row mt-3">
 				<div class="col">
-					<!-- 페이지번호 부분 -->
+					<!-- 페이지번호 부분(사진일때) -->
+				<% if(bname.equals("photo")){%>
+					<ul class="pagination justify-content-center">
+						<%=PagingUtil.pagingBS4(totalRecordCount, imgpageSize, blockPage, nowPage, "boardList.jsp?"+queryStr) %> 
+					</ul>
+				<%}else{ %>
+				<!-- 페이지번호 부분(나머지) -->
 					<ul class="pagination justify-content-center">
 						<%=PagingUtil.pagingBS4(totalRecordCount, pageSize, blockPage, nowPage, "boardList.jsp?"+queryStr) %> 
 					</ul>
+				<%} %>
 				</div>				
 			</div>	
+			<!-- 페이지번호 부분 끝-->
 		</div>
       </div><!-- 게시판내용 끝 -->
       <!-- Sticky Footer -->
