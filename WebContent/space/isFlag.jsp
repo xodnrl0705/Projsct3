@@ -35,6 +35,14 @@ case "dataroom":
 	boardTitle = "정보자료실";
 	img = "../images/space/sub05_title.gif";
 	break;
+case "employee":
+	boardTitle = "직원자료실";
+	img = "../images/community/sub01_title.gif";
+	break;
+case "protector":
+	boardTitle = "보호자게시판";
+	img = "../images/community/sub02_title.gif";
+	break;
 	
 }
 

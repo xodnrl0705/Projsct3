@@ -4,6 +4,7 @@
 <%
 	session.removeAttribute("USER_ID");
 	session.removeAttribute("USER_PW");
+	session.removeAttribute("USER_GRADE");
 	
 	session.invalidate();
 

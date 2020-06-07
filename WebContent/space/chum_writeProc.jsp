@@ -18,6 +18,7 @@ request.setCharacterEncoding("UTF-8");
 
 //파일 업로드를 위한 MultipartRequest객체의 파라미터 준비
 String saveDirectory = application.getRealPath("/Upload");//1.파일을 업로드할 서버의 물리적경로 가져오기
+System.out.println(saveDirectory);
 int maxPostSize = 1024 * 5000;//2. 업로드할 파일의 최대용량 설정(바이트단위)
 String encoding = "UTF-8"; //3.인코딩 타입 설정
 FileRenamePolicy policy = new DefaultFileRenamePolicy();//4.파일명 중복처리

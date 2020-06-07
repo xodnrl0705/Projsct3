@@ -2,7 +2,6 @@
     pageEncoding="UTF-8"%>
 <img src="../images/space/left_title.gif" alt="센터소개 space Introduction" class="left_title" />
 
-
 <!-- <object type="application/x-shockwave-flash" data="../swf/submenu05.swf" width="152" height="255">
 <param name="wmode" value="transparent" />
 </object> -->
@@ -14,6 +13,9 @@
 	<area shape="rect" alt="" title="" coords="10,132,134,166" href="../space/sub01_list.jsp?bname=photo" target="" />
 	<area shape="rect" alt="" title="" coords="10,172,134,207" href="../space/sub01_list.jsp?bname=dataroom" target="" />
 </map>
+
+	
+
 <!-- <ul>
 	<li><a href="../space/sub01.jsp">메뉴1</a></li>
 	<li><a href="../space/sub02.jsp">메뉴2</a></li>

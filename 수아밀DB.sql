@@ -64,3 +64,5 @@ select * FROM membership WHERE id = 'test1';
 
 SELECT * FROM multi_board WHERE bname = 'photo' ORDER BY num DESC LIMIT 0, 6 ;
 
+SELECT * FROM multi_board WHERE bname = 'schedule';
+SELECT * FROM multi_board WHERE bname ='schedule';

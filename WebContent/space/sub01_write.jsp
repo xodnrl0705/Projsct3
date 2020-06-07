@@ -33,7 +33,7 @@
 		return;
 	}
 	%>
-	<!-- <center> -->
+	<center>
 	<div id="wrap">
 		<%@ include file="../include/top.jsp"%>
 		<img src="../images/space/sub_image.jpg" id="main_visual" />
@@ -50,8 +50,8 @@
 				</div>
 				<!-- 게시판내용  -->
 				<div>
-					<!-- 정보자료실,사진 게시판  -->
-				<%if(bname.equals("dataroom")||bname.equals("photo")) {%>
+				<!-- 정보자료실,사진게시판  -->
+				<% if(bname.equals("dataroom") || bname.equals("photo")){%> 
 					<form name="writeFrm" method="post" action = "chum_writeProc.jsp" onsubmit="return checkValidate(this);" enctype="multipart/form-data">
 						<input type="hidden" name="bname" value="<%=bname %>" />
 						<table class="table table-bordered">
@@ -139,6 +139,6 @@
 
 
 	<%@ include file="../include/footer.jsp"%>
-	<!-- </center> -->
+	</center>
 </body>
 </html>

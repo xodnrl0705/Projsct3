@@ -90,7 +90,7 @@
 %>
 
 <body>
-	<!-- <center> -->
+	<center>
 	<div id="wrap">
 		<%@ include file="../include/top.jsp"%>
 		<img src="../images/space/sub_image.jpg" id="main_visual" />
@@ -102,13 +102,13 @@
 				<div class="top_title">
 					<img src="<%=img%>" alt="공지사항" class="con_title" />
 					<p class="location">
-						<img src="../images/center/house.gif" />&nbsp;&nbsp;열린공간&nbsp;>&nbsp;<%=bname%>
+						<img src="../images/center/house.gif" />&nbsp;&nbsp;열린공간&nbsp;>&nbsp;<%=boardTitle%>
 					<p>
 				</div>
 				<div>
 					<!-- 검색부분 -->
 					<div class="row text-right" style="margin-bottom: 20px;">
-						<form class="form-inline ml-auto" name="searchFrm">
+						<form class="form-inline ml-auto" name="searchFrm" method="get">
 							<input type="hidden" name="bname" value="<%=bname%>" />
 							<div class="form-group">
 								<select name="searchColumn" class="form-control">
@@ -128,8 +128,8 @@
 						</form>
 					</div>
 					<!-- 검색부분 끝 -->
-					<!-- 자유,공지, 자료게시판리스트부분 -->
-				<% if(bname.equals("freeboard")||bname.equals("notice")||bname.equals("dataroom")){%> 
+					<!-- 자유,공지,자료리스트부분 -->
+				<% if(!(bname.equals("schedule") || bname.equals("photo"))){%> 
 					<div class="row">
 						<table class="table table-bordered table-hover " style=TABLE-layout:fixed>
 							<colgroup>
@@ -138,7 +138,7 @@
 								<col width="120px" />
 								<col width="120px" />
 								<col width="80px" />
-							<%if (bname.equals("dataroom")) {%>
+							<%if(bname.equals("dataroom")) {%>
 								<col width="50px" />
 							<%} %>
 							</colgroup>
@@ -149,7 +149,7 @@
 									<th class="text-center">작성자</th>
 									<th class="text-center">작성일</th>
 									<th class="text-center">조회수</th>
-								<%if (bname.equals("dataroom")) {%>
+								<%if(bname.equals("dataroom")) {%>
 									<th class="text-center">첨부</th>
 								<% } %>
 								</tr>
@@ -177,7 +177,7 @@
 									<td class="text-center"><%=dto.getId()%></td>
 									<td class="text-center"><%=dto.getPostdate()%></td>
 									<td class="text-center"><%=dto.getVisitcount()%></td>
-								<% if (bname.equals("dataroom")) { %>
+								<%if(bname.equals("dataroom")) {%>
 									<td class="text-center">
 									<%if(dto.getOfile() != null || dto.getSfile() != null){ %>
 									
@@ -247,8 +247,8 @@
 					</div>
 					<%} %>
 					<!-- 사진게시판 리스트부분 끝-->					
-					<!-- 게시판버튼부분  (자유,사진,자료 게시판에서만 글쓰기가능)-->
-				<% if (bname.equals("freeboard")||bname.equals("photo")||bname.equals("dataroom")) { %>
+					<!-- 게시판버튼부분  (공지사항과 스케줄 게시판에서는 글쓰기불가능)-->
+				<% if (!(bname.equals("notice")||bname.equals("schedule"))) { %>
 					<div class="row">
 						<div class="col text-right">
 							<button type="button" class="btn btn-primary"
@@ -280,6 +280,6 @@
 		<%@ include file="../include/quick.jsp"%>
 	</div>
 	<%@ include file="../include/footer.jsp"%>
-	<!-- </center> -->
+	</center>
 </body>
 </html>

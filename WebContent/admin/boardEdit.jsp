@@ -57,7 +57,7 @@ function checkValidate(f) {
         	<h3>게시판 - <small>Edit(수정)</small></h3>
         	<div class="pt-3 pl-3 pr-3">
         	<!-- 정보자료실 게시판  -->
-        	<%if(bname.equals("dataroom")||bname.equals("photo")) {%>
+        	<% if(bname.equals("dataroom") || bname.equals("photo")|| bname.equals("employee")|| bname.equals("protector")){%>
 				<form name="writeFrm" method="post" action="chum_editProc.jsp" onsubmit="return checkValidate(this);" enctype="multipart/form-data">
 					<input type="hidden" name="num" value="<%=dto.getNum() %>"/>
 					<input type="hidden" name="bname" value="<%=bname %>"/> <!--검색시 필수파라미터인 bname이 전달되어야한다.  -->
@@ -91,10 +91,17 @@ function checkValidate(f) {
 									value = "<%=dto.getOfile()%>"/>
 									<input type="hidden" class="form-control" id='orgSfile' name='orgSfile' 
 									value = "<%=dto.getSfile()%>"/>
-									<input type="file" class="form-control" id='chumFile1' name='chumFile1'
-									value = "" />
+									<% if(bname.equals("photo")){%>
+										<input type="file" accept="image/*" class="form-control" id='chumFile1' name='chumFile1'/>
+									<%}else{%>
+										<input type="file" class="form-control" id='chumFile1' name='chumFile1' value=""/>
+									<%} %>
 								<%}else{ %>
-									<input type="file" class="form-control" id='chumFile1' name='chumFile1'/>
+									<% if(bname.equals("photo")){%>
+										<input type="file" accept="image/*" class="form-control" id='chumFile1' name='chumFile1'/>
+									<%}else{%>
+										<input type="file" class="form-control" id='chumFile1' name='chumFile1'/>
+									<%} %>
 								<%} %>
 								</td>
 							</tr>
@@ -108,7 +115,7 @@ function checkValidate(f) {
 						</div>
 					</div>
 				</form>	
-				<!-- 정보자료실 게시판 끝  -->
+				<!-- 자료첨부 게시판 끝  -->
 				<!-- 나머지 게시판  -->
 				<%}else{%>
 				<form name="writeFrm" method="post" action="editProc.jsp" onsubmit="return checkValidate(this);">

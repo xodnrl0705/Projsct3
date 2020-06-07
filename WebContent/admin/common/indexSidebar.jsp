@@ -21,8 +21,8 @@
           <a class="dropdown-item" href="boardList.jsp?bname=dataroom">정보자료실</a>
           <div class="dropdown-divider"></div>
           <h6 class="dropdown-header">커뮤니티:</h6>
-          <a class="dropdown-item" href="404.html">직원자료실</a>
-          <a class="dropdown-item" href="blank.html">보호자게시판</a>
+          <a class="dropdown-item" href="boardList.jsp?bname=employee">직원자료실</a>
+          <a class="dropdown-item" href="boardList.jsp?bname=protector">보호자게시판</a>
         </div>
       </li>
       <!-- <li class="nav-item">

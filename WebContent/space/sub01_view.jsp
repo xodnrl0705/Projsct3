@@ -37,13 +37,13 @@ dao.close();
 %>
 
 <body>
-	<!-- <center> -->
+	<center>
 	<div id="wrap">
 		<%@ include file="../include/top.jsp"%>
 		<img src="../images/space/sub_image.jpg" id="main_visual" />
 		<div class="contents_box">
 			<div class="left_contents">
-				<%@ include file="../include/space_leftmenu.jsp"%>
+			 <%@ include file="../include/space_leftmenu.jsp"%>
 			</div>
 			<div class="right_contents">
 				<div class="top_title">
@@ -54,7 +54,7 @@ dao.close();
 				</div>
 				<!-- view부분  -->
 				<div>
-					<table class="table table-bordered">
+					<table class="table table-bordered" style=TABLE-layout:fixed>
 						<colgroup>
 							<col width="20%" />
 							<col width="30%" />
@@ -79,18 +79,18 @@ dao.close();
 								<td colspan="3"><%=dto.getTitle() %></td>
 							</tr>
 							<tr>
-								<th class="text-center" style="vertical-align: middle;">내용</th>
-								<td colspan="3" class="align-middle" >
+								<th class="text-center" style="vertical-align: middle; ">내용</th>
+								<td colspan="3" class="align-middle"  >
 								<%if(dto.getOfile() != null || dto.getSfile() != null){ 
 									if(bname.equals("photo")){%>
-									<img src="../Upload/<%=dto.getSfile() %>" />
+									<img src="../Upload/<%=dto.getSfile() %>" width="500" height = auto/>
 									<br/><br/><br/>
 								<%} 
 								}%>
 									<%=dto.getContent().replace("\r\n", "<br/>") %>
 							</td>
 							</tr>
-						<% if (bname.equals("dataroom")) {%>
+						<%if(bname.equals("dataroom")) {%>
 							<tr>
 								<th class="text-center" style="vertical-align: middle;">첨부파일</th>
 								<td colspan="3">
@@ -105,7 +105,7 @@ dao.close();
 					</table>
 
 					<!-- 각종버튼부분 -->
-					<%if(bname.equals("freeboard")||bname.equals("photo")||bname.equals("dataroom")){ %>
+					<%if(!(bname.equals("notice")||bname.equals("schedule"))){ %>
 					<div class="row mb-3">
 						<div class="col text-right pr-3">
 						<% if(session.getAttribute("USER_ID").equals(dto.getId())) {%>
@@ -147,9 +147,7 @@ dao.close();
 		</div>
 		<%@ include file="../include/quick.jsp"%>
 	</div>
-
-
 	<%@ include file="../include/footer.jsp"%>
-	<!-- </center> -->
+	</center>
 </body>
 </html>

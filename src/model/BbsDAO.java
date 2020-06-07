@@ -7,10 +7,8 @@ import java.sql.ResultSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-
 import javax.servlet.ServletContext;
 
-import jdk.management.resource.internal.TotalResourceContext;
 
 public class BbsDAO {
 	//멤버변수 
@@ -45,6 +43,7 @@ public class BbsDAO {
 			e.printStackTrace();
 		}
 	}
+
 	//DB자원해제
 	public void close() {
 		try {
@@ -68,15 +67,16 @@ public class BbsDAO {
 			 	입력하는것보다 쿼리에서 제외시켜 주는것이 좋다.
 			*/
 			String query = "INSERT INTO multi_board ( "
-					+ " title,content,id,visitcount,bname) "
+					+ " title,content,id,visitcount,bname,schedule_date) "
 					+ " VALUES ( "
-					+ " ?, ?, ?, 0, ?)";
+					+ " ?, ?, ?, 0, ?, ?)";
 			
 			psmt = con.prepareStatement(query);
 			psmt.setString(1, dto.getTitle());
 			psmt.setString(2, dto.getContent());
 			psmt.setString(3, dto.getId());
 			psmt.setString(4, dto.getBname());
+			psmt.setString(5, dto.getSchedule_date());//3 달력추가부분 db에 일정날짜insert추가
 
 			
 			affected = psmt.executeUpdate();
@@ -88,6 +88,35 @@ public class BbsDAO {
 		}
 		return affected;
 	}
+	public int insert(BbsDTO dto) {
+			
+		int affected = 0;
+		try {
+			String sql = "insert into multi_board ("
+					+" id,title, bname, content, ofile) "
+					+" values ( "
+					+" ?,?, ?, ?, ?) ";
+			psmt = con.prepareStatement(sql);
+			psmt.setString(1, dto.getId());
+			psmt.setString(2, dto.getTitle());
+			psmt.setString(3, dto.getBname());
+			psmt.setString(4, dto.getContent());
+			psmt.setString(5, dto.getOfile());
+		
+			//insert성공시 1반환, 실패시 0반환
+			affected = psmt.executeUpdate();
+		}catch (Exception e) {
+		
+			e.printStackTrace();
+		}
+		
+		return affected;
+	}
+	
+	
+	
+	
+	
 	//글쓰기 처리 메소드(파일추가버전)
 	public int insertchumWrite(BbsDTO dto) {
 		//실제 입력된 행의 갯수를 저장하기 위한 변수
@@ -200,6 +229,45 @@ public class BbsDAO {
 		}
 		return bbs;
 	}
+	//게시판 리스트 페이지 처리
+	public List<BbsDTO> selectListPage_calendar(Map<String, Object> map){
+		List<BbsDTO> bbs = new Vector<BbsDTO>();
+		
+		String query = "SELECT * FROM multi_board WHERE bname ='" +map.get("bname")+"'";
+		System.out.println("쿼리문1:"+query);
+		try {
+			psmt = con.prepareStatement(query);
+
+			//오라클이 반환해준 ResultSet의 갯수만큼 반복한다.
+			while(rs.next()) {
+				//하나의 레코드를 DTO객체에 저장하기 위해 새로운 객체생성
+				BbsDTO dto = new BbsDTO();
+				
+				dto.setNum(rs.getString("num"));
+				dto.setTitle(rs.getString("title"));
+				dto.setContent(rs.getString("content"));
+				dto.setPostdate(rs.getDate("postdate"));
+				dto.setId(rs.getString("id"));
+				dto.setVisitcount(rs.getString("visitcount"));
+				dto.setOfile(rs.getString("ofile"));
+				dto.setSfile(rs.getString("sfile"));
+				dto.setSchedule_date(rs.getString("schedule_date"));
+				System.out.println("여기쿼리성공");
+				System.out.println(rs.getString("schedule_date"));
+				bbs.add(dto);
+			}
+		}
+		catch(Exception e) {
+			System.out.println("Select시 예외발생");
+			e.printStackTrace();
+		}
+		return bbs;
+	}
+	
+	
+	
+	
+	
 	//일련번호 num에 해당하는 게시물의 조회수 증가
 	public void updateVisitCount(String num) {
 		
@@ -299,6 +367,30 @@ public class BbsDAO {
 		
 		return affected;
 	}
+	
+	//첨부파일 업데이트문(서블릿)
+	public int update(BbsDTO dto) {
+		int affected = 0;
+		try {
+			String query = "UPDATE multi_board SET title=?, content=?, ofile=? WHERE num=? ";
+			
+			psmt = con.prepareStatement(query);
+			psmt.setString(1, dto.getTitle());
+			psmt.setString(2, dto.getContent());
+			psmt.setString(3, dto.getOfile());
+			psmt.setString(4, dto.getNum());
+			
+			affected = psmt.executeUpdate();
+			System.out.println("수정완료");
+		}
+		catch (Exception e) {
+			System.out.println("update중 예외발생");
+			e.printStackTrace();
+		}
+		
+		return affected;
+	}
+	
 	
 	
 	

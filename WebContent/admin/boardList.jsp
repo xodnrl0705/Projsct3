@@ -88,7 +88,14 @@ if(bname.equals("photo")){
 param.put("start", start); 
 param.put("end", end); 
 //조건에 맞는 레코드를 select하여 결과셋을 List컬렉션으로 반환받음
-List<BbsDTO> bbs = dao.selectListPage(param); 
+List<BbsDTO> bbs;
+if(bname.equals("schedule")) {
+	bbs = dao.selectListPage_calendar(param);
+}else{
+	bbs = dao.selectListPage(param);
+}
+
+	
 dao.close();
 %>
 
@@ -127,8 +134,8 @@ dao.close();
 			</form>	
 			</div>
 			<!-- 검색부분 끝-->
-			<!-- 자유,공지, 자료게시판리스트부분 -->
-		<% if(bname.equals("freeboard")||bname.equals("notice")||bname.equals("dataroom")){%> 
+			<!-- 자유,공지, 자료, 직원, 보호자게시판리스트부분 -->
+		<% if(!(bname.equals("schedule") || bname.equals("photo"))){%> 
 			<div class="row mt-3">
 				<table class="table table-bordered table-hover table-striped" style=TABLE-layout:fixed>
 				<colgroup>
@@ -137,7 +144,7 @@ dao.close();
 					<col width="120px"/>
 					<col width="120px"/>
 					<col width="80px"/>
-				<%if(bname.equals("dataroom")) {%>
+				<%if(bname.equals("dataroom")||bname.equals("employee")||bname.equals("protector")) {%>
 					<col width="60px"/>
 				<%} %>
 					<col width="80px"/>
@@ -150,7 +157,7 @@ dao.close();
 					<th>작성자</th>
 					<th>작성일</th>
 					<th>조회수</th>
-				<%if(bname.equals("dataroom")) {%>
+				<%if(bname.equals("dataroom")||bname.equals("employee")||bname.equals("protector")) {%>
 					<th>첨부</th>
 				<%} %>
 					<th>수정</th>
@@ -180,7 +187,7 @@ dao.close();
 						<td class="text-center"><%=dto.getId() %></td>
 						<td class="text-center"><%=dto.getPostdate() %></td>
 						<td class="text-center"><%=dto.getVisitcount() %></td>
-					<% if(bname.equals("dataroom")) { %>
+					<%if(bname.equals("dataroom")||bname.equals("employee")||bname.equals("protector")) {%>
 						
 						<td class="text-center">
 						<%if(dto.getOfile() != null || dto.getSfile() != null){ %>
@@ -338,70 +345,65 @@ dao.close();
 				<TBODY>
 					<TR>
 						<%
-		//처음 빈공란 표시
-		for(int index = 1; index < start1 ; index++ ){
-		  out.println("<TD >&nbsp;</TD>");
-		  newLine++;
-		}
-		for(int index = 1; index <= endDay; index++){
-		       String color = "";
-		       
-		       if(newLine == 0){          
-		    	   color = "RED";
-		       }else if(newLine == 6){    
-		    	   color = "#529dbc";
-		       }else{                     
-		    	   color = "BLACK";};
-
-       String sUseDate = Integer.toString(year); 
-       sUseDate += Integer.toString(month+1).length() == 1 ? "0" + Integer.toString(month+1) : Integer.toString(month+1);
-       sUseDate += Integer.toString(index).length() == 1 ? "0" + Integer.toString(index) : Integer.toString(index);
-       
-       int iUseDate = Integer.parseInt(sUseDate);
-       String backColor = "#EFEFEF";
-       if(iUseDate == intToday ) {
-
-             backColor = "#c9c9c9";
-
-       }
-
-       out.println("<TD valign='top' align='left' height='92px' bgcolor='"+backColor+"' nowrap>");
-
-       %>
-		<!--여기부터  -->
-						<font color='<%=color%>'> <%=index %>
-						</font>
-						<%
-
-       out.println("<BR>");
-       out.println(iUseDate);
-       out.println("<BR>");
-		//여기까지가 제목넣을 내용
-		
-       //기능 제거 
-       out.println("</TD>");
-       newLine++;
-       if(newLine == 7)
-       {
-         out.println("</TR>");
-         if(index <= endDay)
-         {
-           out.println("<TR>");
-         }
-         newLine=0;
-       }
+//처음 빈공란 표시
+for(int index = 1; index < start1 ; index++ ){
+  out.println("<TD >&nbsp;</TD>");
+  newLine++;
 }
+	for(int index = 1; index <= endDay; index++){
+		String color = "";
+		  
+		if(newLine == 0){          
+			color = "RED";
+		}else if(newLine == 6){    
+		   	color = "#529dbc";
+		}else{                     
+		  	color = "BLACK";};
+		
+		String sUseDate = Integer.toString(year); 
+		sUseDate += Integer.toString(month+1).length() == 1 ? "0" + Integer.toString(month+1) : Integer.toString(month+1);
+		sUseDate += Integer.toString(index).length() == 1 ? "0" + Integer.toString(index) : Integer.toString(index);
+		
+		int iUseDate = Integer.parseInt(sUseDate);
+		String backColor = "#EFEFEF";
+		if(iUseDate == intToday ) {
+		
+		    backColor = "#c9c9c9";
+		
+		}
+		out.println("<TD valign='top' align='left' height='92px' bgcolor='"+backColor+"' nowrap>");
+	
+							%>
+							<font color='<%=color%>'> <%=index %>
+							</font>
+							<%
+	for(BbsDTO dto : bbs){
+		out.println("<BR>");
+		out.println(iUseDate);
+		out.println("<BR>");
+		out.println(1);
+	}	
+		
+		
+		//기능 제거 
+		out.println("</TD>");
+		newLine++;
+		if(newLine == 7){
+			out.println("</TR>");
+		  	if(index <= endDay){
+		    	out.println("<TR>");
+		  	}
+		  	newLine=0;
+		}
+	}
 //마지막 공란 LOOP
-while(newLine > 0 && newLine < 7)
-{
+while(newLine > 0 && newLine < 7){
 
   out.println("<TD>&nbsp;</TD>");
 
   newLine++;
-
 }
 %>
-
 					</TR>
 
 				</TBODY>
@@ -422,6 +424,7 @@ while(newLine > 0 && newLine < 7)
 				</div>
 			</div>
 			<!-- 글쓰기 버튼부분 끝 -->
+		<%if(!(bname.equals("schedule"))){%>	
 			<!-- 페이지번호 부분 -->
 			<div class="row mt-3">
 				<div class="col">
@@ -439,6 +442,7 @@ while(newLine > 0 && newLine < 7)
 				</div>				
 			</div>	
 			<!-- 페이지번호 부분 끝-->
+		<%} %>
 		</div>
       </div><!-- 게시판내용 끝 -->
       <!-- Sticky Footer -->

@@ -108,7 +108,7 @@ function errFunc() {
 	}
 </style>
  <body>
-	<!-- <center> -->
+	<center>
 	<div id="wrap">
 		<%@ include file="../include/top.jsp" %>
 		<img src="../images/member/sub_image.jpg" id="main_visual" />
@@ -146,6 +146,6 @@ function errFunc() {
 	
 
 	<%@ include file="../include/footer.jsp" %>
-	<!-- </center> -->
+	</center>
  </body>
 </html>

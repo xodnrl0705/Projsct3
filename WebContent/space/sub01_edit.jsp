@@ -38,7 +38,7 @@ dao.close();
 	}
 </script>
 
-	<!-- <center> -->
+	<center>
 	<div id="wrap">
 		<%@ include file="../include/top.jsp"%>
 		<img src="../images/space/sub_image.jpg" id="main_visual" />
@@ -55,11 +55,12 @@ dao.close();
 				</div>
 				<!-- 게시판내용  -->
 				<div>
-					<!-- 정보자료실,사진 게시판  -->
+					<!-- 자료첨부 게시판  -->
+					<% if(bname.equals("dataroom") || bname.equals("photo")){%>
 					<form name="writeFrm" method="post" action = "chum_editProc.jsp"  onsubmit="return checkValidate(this);" enctype="multipart/form-data">
 						<input type="hidden" name="num" value="<%=dto.getNum() %>" />
 						<input type="hidden" name="bname" value="<%=bname %>" />
-						<table class="table table-bordered">
+						<table class="table table-bordered" style=TABLE-layout:fixed>
 							<colgroup>
 								<col width="20%" />
 								<col width="*" />
@@ -86,10 +87,17 @@ dao.close();
 										value = "<%=dto.getOfile()%>"/>
 										<input type="hidden" class="form-control" id='orgSfile' name='orgSfile' 
 										value = "<%=dto.getSfile()%>"/>
-										<input type="file" class="form-control" id='chumFile1' name='chumFile1'
-										value = "" />
+										<% if(bname.equals("photo")){%>
+											<input type="file" accept="image/*" class="form-control" id='chumFile1' name='chumFile1'/>
+										<%}else{%>
+											<input type="file" class="form-control" id='chumFile1' name='chumFile1' value=""/>
+										<%} %>
 									<%}else{ %>
-										<input type="file" class="form-control" id='chumFile1' name='chumFile1'/>
+										<% if(bname.equals("photo")){%>
+											<input type="file" accept="image/*" class="form-control" id='chumFile1' name='chumFile1'/>
+										<%}else{%>
+											<input type="file" class="form-control" id='chumFile1' name='chumFile1'/>
+										<%} %>
 									<%} %>
 									</td>
 								</tr>
@@ -105,7 +113,8 @@ dao.close();
 							</div>
 						</div>
 					</form>
-					<!-- 정보자료실,사진 게시판 끝 -->
+					<!-- 자료첨부 게시판 끝 -->
+					<%}else if(bname.equals("freeboard")){ %>
 					<!-- 자유 게시판(공지사항은 못씀)  -->
 					<form name="writeFrm" method="post" action = "editProc.jsp"  onsubmit="return checkValidate(this);">
 						<input type="hidden" name="num" value="<%=dto.getNum() %>" />
@@ -141,6 +150,7 @@ dao.close();
 						</div>
 					</form>
 					<!-- 자유 게시판 끝 -->
+					<%} %>
 				</div>
 				<!-- 게시판내용 끝 -->
 			</div>
@@ -150,6 +160,6 @@ dao.close();
 
 
 	<%@ include file="../include/footer.jsp"%>
-	<!-- </center> -->
+	</center>
 </body>
 </html>

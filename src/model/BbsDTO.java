@@ -12,7 +12,8 @@ public class BbsDTO {
     java.sql.Date postdate;
     String ofile;
     String sfile;
-
+    String schedule_date;
+    
     String name;//view에서 membership테이블과 join해서 작성자 이름을 보기위한변수 
     
 	public String getNum() {
@@ -74,6 +75,12 @@ public class BbsDTO {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public String getSchedule_date() {
+		return schedule_date;
+	}
+	public void setSchedule_date(String schedule_date) {
+		this.schedule_date = schedule_date;
 	}
 	
 }

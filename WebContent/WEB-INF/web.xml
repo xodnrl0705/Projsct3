@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" id="WebApp_ID" version="3.1">
   <display-name>Project3</display-name>
-  
+ 	
   <!-- 초기화 파라미터 -->
   <!-- 마리아DB 드라이버와 연결정보 -->
   <context-param>
@@ -46,7 +46,63 @@
   <servlet-mapping>
   	<servlet-name>MainController</servlet-name>
   	<url-pattern>/main/main.do</url-pattern>
-  </servlet-mapping>
+  </servlet-mapping> 
+ 
+  <!-- 리스트ctrl 서블릿 -->
+   <servlet>
+      <servlet-name>CommunityList</servlet-name>
+      <servlet-class>controller.ListCtrl</servlet-class>
+   </servlet>
+   <servlet-mapping>
+      <servlet-name>CommunityList</servlet-name>
+      <url-pattern>/Community/List</url-pattern>
+   </servlet-mapping>
+   <!-- 파일다운로드 서블릿 -->
+   <servlet>
+      <servlet-name>CommunityDownload</servlet-name>
+      <servlet-class>controller.DownloadCtrl</servlet-class>
+   </servlet>
+   <servlet-mapping>
+      <servlet-name>CommunityDownload</servlet-name>
+      <url-pattern>/Community/Download</url-pattern>
+   </servlet-mapping>
+   <!-- 뷰ctrl 서블릿 -->
+   <servlet>
+      <servlet-name>CommunityView</servlet-name>
+      <servlet-class>controller.ViewCtrl</servlet-class>
+   </servlet>
+   <servlet-mapping>
+      <servlet-name>CommunityView</servlet-name>
+      <url-pattern>/Community/View</url-pattern>
+   </servlet-mapping>
+   <!-- 글쓰기ctrl 서블릿 -->
+   <servlet>
+      <servlet-name>CommunityWrite</servlet-name>
+      <servlet-class>controller.WriteCtrl</servlet-class>
+   </servlet>
+   <servlet-mapping>
+      <servlet-name>CommunityWrite</servlet-name>
+      <url-pattern>/Community/Write</url-pattern>
+   </servlet-mapping>
+   <!-- 수정ctrl 서블릿 -->
+   <servlet>
+      <servlet-name>CommunityEdit</servlet-name>
+      <servlet-class>controller.EditCtrl</servlet-class>
+   </servlet>
+   <servlet-mapping>
+      <servlet-name>CommunityEdit</servlet-name>
+      <url-pattern>/Community/Edit</url-pattern>
+   </servlet-mapping>
+   <!-- 삭제ctrl 서블릿 -->
+   <servlet>
+      <servlet-name>CommunityDelete</servlet-name>
+      <servlet-class>controller.DeleteCtrl</servlet-class>
+   </servlet>
+   <servlet-mapping>
+      <servlet-name>CommunityDelete</servlet-name>
+      <url-pattern>/Community/Delete</url-pattern>
+   </servlet-mapping>
+   
   
   
   <welcome-file-list>

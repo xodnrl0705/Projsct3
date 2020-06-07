@@ -31,16 +31,15 @@ function checkValidate(f) {
 			alert("파일첨부를 해주세요");
 			return false
 		}
+	<%}else if(bname.equals("schedule")){%>
+	
+		if(f.schedule_date.value == ""){
+			alert("날짜를 선택해주세요");
+			return false
+		}
 	<%}%>
+	
 }
-$(function() {
-  $( "#datepicker" ).datepicker();
-} );
-
-
-
-
-
 
 </script>
 
@@ -54,8 +53,8 @@ $(function() {
         	<div class="pt-3 pl-3 pr-3">
         	<h3>게시판 - <small>Write(작성)</small></h3>
         	<div class="pt-3 pl-3 pr-3">
-			<!-- 정보자료실,사진 게시판  -->
-			<%if(bname.equals("dataroom")||bname.equals("photo")) {%>
+			<!-- 정보자료실,사진,직원, 보호자게시판  -->
+			<% if(bname.equals("dataroom") || bname.equals("photo")|| bname.equals("employee")|| bname.equals("protector")){%> 
 				<form name="writeFrm" method="post" action="chum_writeProc.jsp" onsubmit="return checkValidate(this);" enctype="multipart/form-data">
 					<input type="hidden" name="bname" value="<%=bname %>"/> <!--검색시 필수파라미터인 bname이 전달되어야한다.  -->
 					<table class="table table-bordered table-striped">
@@ -118,13 +117,17 @@ $(function() {
 										<input type="text" class="form-control" name="title" id="title" />
 									</td>
 								</tr>
+								<!-- 1달력추가부분 -->
+								<%if(bname.equals("schedule")) {%>
 								<tr>
 									<th class="text-center" 
 										style="vertical-align:middle;">일정날짜</th>
 									<td>
-										<p><input type="date" name="datepicker" id="datepicker" size="30"/></p>
+										<input type="date" name="schedule_date" id="schedule_date" size="30"/>
 									</td>
 								</tr>
+								<%} %>
+								<!-- 1달력추가부분 끝 -> writeProc으로 폼값전송/db랑 dto(게터세터)에도 스케쥴데이트 추가-->
 								<tr>
 									<th class="text-center" 
 										style="vertical-align:middle;">내용</th>

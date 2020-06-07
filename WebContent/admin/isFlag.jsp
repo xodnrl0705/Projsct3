@@ -29,5 +29,11 @@ case "photo":
 case "dataroom":
 	boardTitle = "정보자료실";
 	break;
+case "employee":
+	boardTitle = "직원자료실";
+	break;
+case "protector":
+	boardTitle = "보호게시판";
+	break;
 }
 %>
